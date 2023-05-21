@@ -1,0 +1,291 @@
+@import url(../../index.scss);
+
+.themeToggler {
+	position: absolute;
+	top: 4rem;
+
+	right: 6rem;
+	cursor: pointer;
+	svg {
+		width: 20px;
+		height: 20px;
+	}
+	@media only screen and (max-width: 550px) {
+		top: 3rem;
+
+		right: 3rem;
+	}
+}
+
+.login {
+	text-align: center;
+	margin-top: 6rem;
+	margin-bottom: 4rem;
+
+	max-width: 632px;
+	padding: 0 1rem;
+	margin-left: auto;
+	margin-right: auto;
+	h1 {
+		font-size: 3rem;
+
+		color: var(--primary-color);
+	}
+
+	h2 {
+		font-size: 2.5rem;
+	}
+	@media only screen and (max-width: 550px) {
+		h1 {
+			font-size: 2.5rem;
+		}
+		h2 {
+			font-size: 2rem;
+		}
+	}
+	p {
+		font-size: 0.875rem;
+		color: grey;
+	}
+	form {
+		margin-top: 2.5rem;
+		margin-bottom: 1rem;
+	}
+	.forgotPass {
+		display: block;
+		cursor: pointer;
+		color: var(--info);
+		font-size: 14px;
+		text-align: left;
+		text-decoration: underline;
+		&:hover {
+			opacity: 0.85;
+		}
+	}
+	input[type='submit'] {
+		margin-top: 1rem;
+		padding: 0.75rem;
+
+		display: block;
+
+		background-color: var(--primary-color);
+		color: var(--white);
+		font-size: 1rem;
+		cursor: pointer;
+		transition: 300ms;
+		&:hover,
+		&:focus {
+			opacity: 0.8;
+		}
+	}
+	.switchLog {
+		color: #919191;
+		span {
+			margin-left: 0.25rem;
+			color: var(--primary-color);
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+}
+
+input {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+
+	border-radius: 6px;
+	outline: none;
+	border: none;
+}
+
+.splitBy2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+	@media only screen and (max-width: 550px) {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+}
+
+.inputContainer {
+	position: relative;
+	width: 100%;
+
+	margin-bottom: 1rem;
+
+	input {
+		height: 70px;
+		background-color: var(--bg2-color);
+		color: var(--text-color);
+		font-weight: 500;
+		font-size: 14px;
+		padding: 1.75rem 1rem 1.25rem 1rem;
+
+		&:focus {
+			border: solid 1px var(--primary-color);
+		}
+
+		&:focus ~ label,
+		&:valid ~ label {
+			transition: 300ms;
+			transform: translate(0, 0);
+			font-size: 14px;
+			top: 0.5rem;
+			color: var(--primary-color);
+		}
+	}
+
+	label {
+		transition: 300ms;
+		position: absolute;
+		left: 1rem;
+		top: 50%;
+		transform: translate(0, -50%);
+		color: var(--grey);
+		pointer-events: none;
+	}
+}
+
+.inputRadioContainer {
+	@media only screen and (max-width: 550px) {
+		margin-bottom: 1rem;
+	}
+	height: 70px;
+	background-color: var(--bg2-color);
+
+	border-radius: 6px;
+	position: relative;
+	display: flex;
+	align-items: center;
+
+	label {
+		position: absolute;
+		left: 1rem;
+		transform: translate(0, 0);
+		font-size: 14px;
+		top: 0.5rem;
+		color: var(--primary-color);
+	}
+
+	input[type='radio'],
+	li {
+		display: inline;
+	}
+
+	input[type='radio'] {
+		width: fit-content;
+		color: var(--primary-color);
+		accent-color: var(--primary-color);
+	}
+	li {
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	span {
+		font-size: 14px;
+		color: var(--grey);
+		font-weight: 500;
+	}
+
+	ul {
+		margin-top: 0.7rem;
+		margin-left: 1rem;
+		display: flex;
+		gap: 0.5rem;
+	}
+}
+
+.signup {
+	margin-top: 3rem;
+	margin-bottom: 6rem;
+}
+
+.passwordIcon {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: var(--grey);
+	position: absolute;
+
+	right: 1rem;
+	top: 50%;
+	transform: translate(0, -50%);
+
+	.eye {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	svg {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+.info {
+	display: none;
+}
+
+.error {
+	.info {
+		position: absolute;
+		top: 50%;
+		right: 0.5rem;
+		transform: translate(0, -50%);
+		display: flex;
+		height: 30px;
+		width: 30px;
+		align-items: center;
+		justify-content: center;
+		border-radius: 1000px;
+		svg {
+			width: 18px;
+			height: 18px;
+		}
+	}
+	.passwordIcon {
+		right: 3rem;
+	}
+	input {
+		border: solid 1px var(--error);
+		&:focus {
+			border: solid 1px var(--error);
+		}
+		&:focus ~ label,
+		&:valid ~ label {
+			color: var(--error);
+		}
+	}
+	.info {
+		color: var(--error);
+		&:hover {
+			transition: 300ms;
+			background-color: var(--bg-color);
+		}
+	}
+}
+
+.msg {
+	display: none;
+}
+.info:hover ~ .msg {
+	transition: 300ms;
+	display: block;
+	position: absolute;
+	max-width: 170px;
+	text-align: left;
+	font-size: 12px;
+	background-color: var(--bg-color);
+	color: var(--grey);
+	padding: 0.5rem;
+	border-radius: 4px;
+	top: 50%;
+	transform: translate(0, -50%);
+	right: 2.75rem;
+}
