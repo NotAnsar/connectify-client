@@ -36,6 +36,7 @@
 			}
 		}
 		.profileImg {
+			position: relative;
 			height: 150px;
 			width: 150px;
 			border-radius: 15px;
@@ -45,16 +46,54 @@
 			align-items: center;
 			justify-content: center;
 			color: white;
+
 			h5 {
 				font-size: 5rem;
 				font-weight: 500;
 			}
 			img {
+				border-radius: inherit;
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
 				color: transparent;
 				text-indent: 10000px;
+			}
+			.editPhoto {
+				position: absolute;
+				top: 50%;
+				bottom: 50%;
+				transform: translateY(-50%);
+				right: 0;
+				width: 24px;
+				height: 100%;
+
+				cursor: pointer;
+
+				display: grid;
+				align-items: center;
+				justify-content: center;
+				flex-direction: column;
+				grid-template-rows: 1fr 1fr;
+
+				.delete,
+				.edit {
+					height: 100%;
+					width: inherit;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+				.delete {
+					background-color: var(--error);
+				}
+				.edit {
+					background-color: var(--info);
+				}
+				svg {
+					width: 18px;
+					height: 18px;
+				}
 			}
 		}
 		@media only screen and (max-width: 750px) {
@@ -63,9 +102,9 @@
 			.usernameContainer {
 				text-align: center;
 			}
-			transform: translateY(-75px);
+			// transform: translateY(-75px);
 			@media only screen and (max-width: 680px) {
-				transform: translateY(-105px);
+				// transform: translateY(-105px);
 			}
 			.userProfile {
 				align-items: center;
@@ -97,7 +136,7 @@
 			}
 		}
 		.follow {
-			background-color: var(--primary-color);
+			background-color: var(--info);
 			p {
 				color: var(--text-color);
 			}
@@ -206,10 +245,10 @@
 			@media only screen and (max-width: 750px) {
 				gap: 2rem;
 				grid-template-columns: 1fr;
-				transform: translateY(-40px);
+				// // transform: translateY(-40px);
 
 				@media only screen and (max-width: 680px) {
-					transform: translateY(-80px);
+					// // transform: translateY(-80px);
 				}
 			}
 
@@ -220,7 +259,7 @@
 				position: unset;
 			}
 			.posts {
-				max-width: fit-content;
+				max-width: 100%;
 			}
 		}
 	}
@@ -230,7 +269,7 @@
 	height: 250px;
 	width: 100%;
 	background-color: var(--grey);
-
+	position: relative;
 	img {
 		width: inherit;
 		height: 100%;
@@ -238,8 +277,37 @@
 		color: transparent;
 		text-indent: 10000px;
 	}
+	.editCoverPhoto {
+		position: absolute;
+		right: 2rem;
+		bottom: 3.5rem;
+		background-color: var(--bg2-color);
+		border-radius: 6px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		overflow: hidden;
+		svg {
+			padding: 1rem;
+
+			height: 20px;
+			width: 20px;
+			&.delete:hover {
+				background-color: var(--error);
+			}
+			&.edit:hover {
+				background-color: var(--info);
+			}
+		}
+		@media only screen and (max-width: 550px) {
+			right: 1rem;
+			top: 1rem;
+			bottom: unset;
+		}
+	}
 
 	@media only screen and (max-width: 680px) {
-		transform: translateY(-40px);
+		// transform: translateY(-40px);
 	}
 }

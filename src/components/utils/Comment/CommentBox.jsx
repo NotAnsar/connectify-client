@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import ProfilePic from '../ProfilePic';
 import Comment from './Comment';
 import classes from './Comment.module.scss';
@@ -7,6 +7,7 @@ import { CgClose } from 'react-icons/cg';
 
 const CommentBox = ({ showComment, comments, commentChange }) => {
 	const [newComment, setNewComment] = useState('');
+	const commentsContainerRef = useRef(null);
 
 	function addComment(e) {
 		e.preventDefault();
@@ -19,8 +20,12 @@ const CommentBox = ({ showComment, comments, commentChange }) => {
 	}
 
 	useEffect(() => {
-		console.log('rcommentChange');
-	}, [commentChange]);
+		const commentsContainer = commentsContainerRef.current;
+		if (commentsContainer) {
+			commentsContainer.scrollTop = commentsContainer.scrollHeight;
+		}
+	}, [comments]);
+
 	return (
 		<Fragment>
 			<div className={classes.bg} onClick={() => showComment(false)}></div>
@@ -29,7 +34,7 @@ const CommentBox = ({ showComment, comments, commentChange }) => {
 					<h4>Comment</h4>
 					<CgClose onClick={() => showComment(false)} />
 				</div>
-				<div className={classes.comments}>
+				<div className={classes.comments} ref={commentsContainerRef}>
 					{comments.map((c) => (
 						<Comment comment={c} key={c.id} />
 					))}

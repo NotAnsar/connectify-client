@@ -6,14 +6,21 @@ import ProfilePic from '../utils/ProfilePic';
 import { FiMessageCircle, FiHeart, FiBookmark } from 'react-icons/fi';
 import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
+import moment from 'moment';
 import { makeRequest } from '../../axios';
+import LikeBox from '../utils/Like/LikeBox';
 
-const Post = ({ post, me }) => {
-	const [show, setShow] = useState(false);
-	const [comment, setComment] = useState('');
+import { Link } from 'react-router-dom';
+
+const Post = ({ post, me, getPosts }) => {
 	const { user } = useSelector((state) => state.auth);
+	const [showL, setShowL] = useState(false);
+	const [showC, setShowC] = useState(false);
+	const [comment, setComment] = useState('');
+	const [likes, setLikes] = useState('');
 	const [saved, setSaved] = useState(post.is_saved);
 	const [liked, setLiked] = useState(post.is_liked);
+	// const [followed, setFollowed] = useState(post.is_followed);
 
 	const commentChange = (newComment, status = 'added') => {
 		if (status === 'added') {
@@ -42,18 +49,26 @@ const Post = ({ post, me }) => {
 		}
 	};
 
+	async function deletePost(postId) {
+		try {
+			await makeRequest.delete(`posts/${postId}`);
+
+			getPosts();
+		} catch (error) {
+			console.log(error);
+		}
+	}
 	useEffect(() => {
-		document.body.style.overflow = show ? 'hidden' : '';
-	}, [show]);
+		document.body.style.overflow = showC || showL ? 'hidden' : '';
+	}, [showC, showL]);
 
 	function savePost() {
 		save();
 		async function save() {
 			try {
-				await makeRequest.post(
-					`/savedPosts/${saved === 1 ? 'unsave' : 'save'}`,
-					{ post_id: post.id }
-				);
+				await makeRequest.post(`/saves/${saved === 1 ? 'unsave' : 'save'}`, {
+					post_id: post.id,
+				});
 
 				setSaved(saved === 1 ? 0 : 1);
 			} catch (error) {
@@ -62,14 +77,29 @@ const Post = ({ post, me }) => {
 		}
 	}
 
+	// function followUser() {
+	// 	follow();
+	// 	async function follow() {
+	// 		try {
+	// 			await makeRequest.post(
+	// 				`/follow/${followed === 1 ? 'unfollow' : 'follow'}`,
+	// 				{ user_id: post.user_id }
+	// 			);
+
+	// 			setFollowed(followed === 1 ? 0 : 1);
+	// 		} catch (error) {
+	// 			console.log(error);
+	// 		}
+	// 	}
+	// }
+
 	function likePost() {
 		like();
 		async function like() {
 			try {
-				await makeRequest.post(
-					`likedPosts/${liked === 1 ? 'dislike' : 'like'}`,
-					{ post_id: post.id }
-				);
+				await makeRequest.post(`likes/${liked === 1 ? 'dislike' : 'like'}`, {
+					post_id: post.id,
+				});
 
 				setLiked(liked === 1 ? 0 : 1);
 				liked ? post.likes-- : post.likes++;
@@ -91,19 +121,39 @@ const Post = ({ post, me }) => {
 				setComment(null);
 			}
 		}
-		setShow(true);
+		setShowC(true);
+	}
+
+	function showLike() {
+		getLikes();
+		async function getLikes() {
+			try {
+				const res = await makeRequest.get(`likes/${post.id}`);
+
+				console.log(res.data.likes);
+				setLikes(res.data.likes);
+			} catch (error) {
+				console.log(error);
+				setLikes(null);
+			}
+		}
+
+		setShowL(true);
 	}
 
 	return (
 		<Fragment>
-			{show && comment && (
+			{comment && showC && (
 				<CommentBox
-					showComment={setShow}
+					showComment={setShowC}
 					commentChange={commentChange}
 					comments={comment}
 					postId={post.id}
 				/>
 			)}
+
+			{showL && likes && <LikeBox likes={likes} showLikes={setShowL} />}
+
 			<Card>
 				<div className={classes.cardContainer}>
 					<div className={classes.userInfo}>
@@ -112,14 +162,17 @@ const Post = ({ post, me }) => {
 								width='50px'
 								user={{
 									prenom: post.prenom,
+									id: post.user_id,
 									photo: post.photo,
 								}}
 							/>
 							<span>
-								<h4>
-									{post.nom} {post.prenom}
+								<h4 className={classes.toProfile}>
+									<Link to={'/profile/' + post.user_id}>
+										{post.nom} {post.prenom}
+									</Link>
 								</h4>
-								<h6>{post.release_dt}</h6>
+								<h6>{moment(post.release_dt).fromNow()}</h6>
 							</span>
 						</div>
 
@@ -127,29 +180,46 @@ const Post = ({ post, me }) => {
 						<span>Follow</span>
 					</div> */}
 
-						{me ? (
+						{me && (
 							<div className={classes.myPost}>
 								<span className={classes.edit}>
 									<AiOutlineEdit />
 								</span>
-								<span className={classes.delete}>
+								<span
+									className={classes.delete}
+									onClick={() => deletePost(post.id)}
+								>
+									<AiOutlineDelete />
+								</span>
+							</div>
+						)}
+						{/* {me ? (
+							<div className={classes.myPost}>
+								<span className={classes.edit}>
+									<AiOutlineEdit />
+								</span>
+								<span
+									className={classes.delete}
+									onClick={() => deletePost(post.id)}
+								>
 									<AiOutlineDelete />
 								</span>
 							</div>
 						) : (
 							<div
+								onClick={() => followUser()}
 								className={`${classes.userBtn} ${
-									post.is_followed ? classes.following : classes.follow
+									followed ? classes.following : classes.follow
 								}`}
 							>
-								<span> {post.is_followed ? 'Following' : 'Follow'}</span>
+								<span> {followed ? 'Following' : 'Follow'}</span>
 							</div>
-						)}
+						)} */}
 					</div>
 
 					{post.img && (
 						<div className={classes.contentImg}>
-							<img src={post.img} alt='' />
+							<img src={'/upload/' + encodeURIComponent(post.img)} alt='' />
 						</div>
 					)}
 
@@ -164,9 +234,14 @@ const Post = ({ post, me }) => {
 							</span>
 						</div>
 						<div className={classes.iconRight}>
-							<span onClick={() => likePost()}>
-								<FiHeart style={{ fill: liked === 1 && 'currentcolor' }} />
-								<p>{post.likes}</p>
+							<span>
+								<FiHeart
+									onClick={() => likePost()}
+									style={{ fill: liked === 1 && 'currentcolor' }}
+								/>
+								<p onClick={showLike} className={classes.likeCount}>
+									{post.likes}
+								</p>
 							</span>
 							<span className={classes.comment} onClick={showComment}>
 								<FiMessageCircle />

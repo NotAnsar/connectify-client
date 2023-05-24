@@ -1,0 +1,66 @@
+.settingsWrapper {
+	width: 100%;
+	width: 900px;
+
+	padding: 1rem;
+	background-color: var(--bg2-color);
+	border-radius: 6px;
+	padding-left: 1.5rem;
+
+	height: 100%;
+	padding-bottom: 2rem;
+	h1 {
+		font-size: 1.9rem;
+		font-weight: 500;
+	}
+	ul {
+		margin-top: 1rem;
+		display: flex;
+		gap: 1.5rem;
+		li {
+			cursor: pointer;
+			border-bottom: 2px solid transparent;
+			padding-bottom: 0.25rem;
+			&.clicked {
+				border-color: var(--primary-color);
+				color: var(--primary-color);
+			}
+			&.error {
+				color: var(--error);
+				border-color: var(--error);
+			}
+		}
+	}
+	@media only screen and (max-width: 680px) {
+		padding-left: 1rem;
+		margin-left: 0;
+	}
+}
+
+.itemContainer {
+	margin-top: 2rem;
+}
+
+.secondaryColor {
+	background-color: var(--secondary-color);
+}
+.editProfileWrapper {
+	input {
+		background-color: var(--secondary-color);
+	}
+	.deleteBtn,
+	.updateBtn {
+		margin-top: 1.5rem;
+		width: unset;
+		padding: 1rem 2rem;
+		background: var(--primary-color);
+		border-radius: 6px;
+		outline: none;
+		border: none;
+		color: white;
+		cursor: pointer;
+	}
+	.deleteBtn {
+		background: var(--error);
+	}
+}

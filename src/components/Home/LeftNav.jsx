@@ -23,7 +23,7 @@ const LeftNav = () => {
 				/>
 				<LeftNavItem
 					link='settings'
-					clicked={location.pathname === '/settings'}
+					clicked={location.pathname.includes('/settings')}
 					Logo={FiSettings}
 					msg={'Settings'}
 				/>

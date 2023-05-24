@@ -5,7 +5,6 @@ import classes from './Home.module.scss';
 import { FiBookmark } from 'react-icons/fi';
 
 import Post from './Post';
-import { Link } from 'react-router-dom';
 import ProfileCard from './ProfileCard';
 
 const SavedPosts = () => {
@@ -57,9 +56,7 @@ const SavedPosts = () => {
 					))}
 			</section>
 			<article className={classes.right}>
-				<Link to='/profile'>
-					<ProfileCard />
-				</Link>
+				<ProfileCard />
 			</article>
 		</Fragment>
 	);

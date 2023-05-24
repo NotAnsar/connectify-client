@@ -1,7 +1,8 @@
 import { useSelector } from 'react-redux';
 import classes from './Layout.module.scss';
+import { Link } from 'react-router-dom';
 
-const ProfilePic = ({ width = '40px', user }) => {
+const ProfilePic = ({ width = '40px', user, withlink = true }) => {
 	const me = useSelector((state) => state.auth.user);
 	if (user === undefined) user = me;
 
@@ -15,13 +16,21 @@ const ProfilePic = ({ width = '40px', user }) => {
 			}}
 			className={classes.profileImg}
 		>
-			{user.photo ? (
-				<img src={user.photo} alt='' />
-			) : (
-				<span className={classes.profile}>
-					{user.prenom.charAt(0).toUpperCase()}
-				</span>
-			)}
+			<>
+				{user.photo ? (
+					withlink ? (
+						<Link to={`/profile/${user?.id}`}>
+							<img src={user.photo} alt='' />
+						</Link>
+					) : (
+						<img src={user.photo} alt='' />
+					)
+				) : (
+					<span className={classes.profile}>
+						{user.prenom.charAt(0).toUpperCase()}
+					</span>
+				)}
+			</>
 		</div>
 	);
 };

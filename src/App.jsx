@@ -10,12 +10,11 @@ import { makeRequest } from './axios';
 function App() {
 	const { token, user } = useSelector((state) => state.auth);
 	makeRequest.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-	console.log(token);
 
 	return (
 		<Routes>
 			{user && <Route path='/*' element={<Home />} />}
-			{user && token && <Route path='/profile' element={<Profile />} />}
+			{user && token && <Route path='/profile/:id' element={<Profile />} />}
 			{!user && <Route path='/*' element={<AuthPage />} />}
 		</Routes>
 	);

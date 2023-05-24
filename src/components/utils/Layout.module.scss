@@ -47,9 +47,10 @@
 .alert {
 	width: 300px;
 	text-align: left;
-	position: absolute;
-	left: 3rem;
-	bottom: 4rem;
+	position: fixed;
+	z-index: 100;
+	left: 2rem;
+	bottom: 5rem;
 	padding: 1.25rem 0.75rem;
 	font-size: 14px;
 	box-sizing: border-box;
@@ -65,10 +66,10 @@
 	}
 }
 
-.alert-info {
+.alertInfo {
 	background-color: var(--info);
 }
 
-.alert-warning {
+.alertWarning {
 	background-color: var(--warning);
 }

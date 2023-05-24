@@ -21,7 +21,6 @@ const Login = () => {
 		e.preventDefault();
 
 		if (Object.values(formValid).every(Boolean)) {
-			console.log(formData);
 			try {
 				const data = await makeRequest.post('/auth/login', formData);
 				dispatch(login(data.data));

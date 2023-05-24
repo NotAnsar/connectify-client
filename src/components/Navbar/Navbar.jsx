@@ -57,9 +57,8 @@ const Navbar = () => {
 						<span className={classes.notification}>
 							<IoNotificationsOutline />
 						</span>
-						<Link to='/profile'>
-							<ProfilePic />
-						</Link>
+
+						<ProfilePic />
 					</nav>
 				</Layout>
 			</header>
