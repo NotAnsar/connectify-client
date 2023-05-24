@@ -16,7 +16,7 @@ const ProfilePic = ({ width = '40px', user, withlink = true }) => {
 			}}
 			className={classes.profileImg}
 		>
-			<>
+			{/* <>
 				{user.photo ? (
 					withlink ? (
 						<Link to={`/profile/${user?.id}`}>
@@ -25,6 +25,31 @@ const ProfilePic = ({ width = '40px', user, withlink = true }) => {
 					) : (
 						<img src={user.photo} alt='' />
 					)
+				) : withlink ? (
+					<Link to={`/profile/${user?.id}`}>
+						<span className={classes.profile}>
+							{user.prenom.charAt(0).toUpperCase()}
+						</span>
+					</Link>
+				) : (
+					<span className={classes.profile}>
+						{user.prenom.charAt(0).toUpperCase()}
+					</span>
+				)}
+			</> */}
+			<>
+				{withlink ? (
+					<Link to={`/profile/${user?.id}`}>
+						{user.photo ? (
+							<img src={'/upload/' + encodeURIComponent(user?.photo)} alt='' />
+						) : (
+							<span className={classes.profile}>
+								{user.prenom.charAt(0).toUpperCase()}
+							</span>
+						)}
+					</Link>
+				) : user.photo ? (
+					<img src={'/upload/' + encodeURIComponent(user?.photo)} alt='' />
 				) : (
 					<span className={classes.profile}>
 						{user.prenom.charAt(0).toUpperCase()}

@@ -17,15 +17,20 @@ import Post from '../Home/Post';
 
 import { makeRequest } from '../../axios';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../utils/Alert';
+import { setMyUser } from '../../store/auth';
 
 const Profile = () => {
-	const { id: myId } = useSelector((state) => state.auth.user);
+	const { user: me } = useSelector((state) => state.auth);
+	const myId = me.id;
 	const { id } = useParams();
+	const dispatch = useDispatch();
 
 	const [posts, setPosts] = useState('');
 	const [user, setUser] = useState('');
+	const [coverpic, setcoverpic] = useState();
+	const [profilePic, setProfilePic] = useState();
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 	const [alert, setalert] = useState(false);
@@ -48,9 +53,76 @@ const Profile = () => {
 			setUser(null);
 		}
 	}
+
+	async function updatePicConfirm(status = 'profile') {
+		console.log('hi');
+		let img = null;
+		let pic;
+		if (status === 'profile' && profilePic) pic = profilePic;
+		else if (status === 'cover' && coverpic) pic = coverpic;
+		else if (status === 'deleteProfile' || status === 'deleteCover') pic = null;
+		else {
+			console.log('problem');
+			return;
+		}
+		if (pic) {
+			const data = new FormData();
+			const fileName = Date.now() + pic.name;
+			data.append('name', fileName);
+			data.append('file', pic);
+
+			try {
+				const res = await makeRequest.post('/upload', data);
+				console.log(res.data);
+				img = res.data.filename;
+				setProfilePic();
+				setcoverpic();
+			} catch (err) {
+				console.log(err);
+			}
+		}
+		let obj = {};
+		if (status === 'profile') obj = { photo: img };
+		else if (status === 'cover') obj = { coverPhoto: img };
+		else if (status === 'deleteCover') {
+			obj = { coverPhoto: img };
+			if (!me.coverPhoto) return;
+		} else if (status === 'deleteProfile') {
+			obj = { photo: img };
+			if (!me.photo) return;
+		} else {
+			console.log('problem 2');
+			return;
+		}
+
+		update();
+		async function update() {
+			try {
+				const res = await makeRequest.patch('users', obj);
+
+				console.log(res.data.user);
+				dispatch(setMyUser(res.data));
+
+				if (status === 'profile') setalert('Profile Pic Changed');
+
+				if (status === 'cover') setalert('Cover Pic Changed');
+
+				if (status === 'deleteCover') setalert('Cover Pic Deleted');
+
+				if (status === 'deleteProfile') setalert('Profile Pic Deleted');
+			} catch (error) {
+				console.log(error);
+			}
+		}
+	}
+
 	useEffect(() => {
 		getMyPosts();
-	}, [id]);
+	}, [id, me.photo, me.coverPhoto]);
+
+	useEffect(() => {
+		document.body.style.overflow = coverpic || profilePic ? 'hidden' : '';
+	}, [coverpic || profilePic]);
 
 	function postDeleted() {
 		getMyPosts();
@@ -64,16 +136,70 @@ const Profile = () => {
 		return <h1>Loading</h1>;
 	}
 
+	function updatePic(e, type) {
+		if (type === 'cover') {
+			setcoverpic(e.target.files[0]);
+			setProfilePic();
+		}
+		if (type === 'profile') {
+			setProfilePic(e.target.files[0]);
+			setcoverpic();
+		}
+	}
+
 	return (
 		<Fragment>
 			{alert && <Alert msg={alert} setAlert={setalert} color={'red'} />}
+			{(coverpic || profilePic) && (
+				<div className={classes.confirmUpdate}>
+					<span
+						onClick={() => {
+							coverpic && updatePicConfirm('cover');
+							profilePic && updatePicConfirm('profile');
+						}}
+					>
+						{coverpic
+							? 'Click to Change Cover Pic'
+							: 'Click to Change Profile Pic'}
+					</span>
+					<span
+						onClick={() => {
+							setProfilePic();
+							setcoverpic();
+						}}
+					>
+						Cancel
+					</span>
+				</div>
+			)}
 			<Navbar />
 			<section className={classes.coverImg}>
-				{user?.coverPhoto && <img src={user?.coverPhoto} alt='' />}
+				{coverpic && (
+					<img
+						className='editCoverPic'
+						src={URL.createObjectURL(coverpic)}
+						alt=''
+					/>
+				)}
+				{user?.coverPhoto && !coverpic && (
+					<img src={'/upload/' + encodeURIComponent(user?.coverPhoto)} alt='' />
+				)}
+
 				{myId === +id && (
 					<div className={classes.editCoverPhoto}>
-						<AiOutlineEdit className={classes.edit} />
-						<AiOutlineDelete className={classes.delete} />
+						<label className={classes.label}>
+							<AiOutlineEdit className={classes.edit} />
+							<input
+								className={classes.input}
+								type='file'
+								onChange={(e) => updatePic(e, 'cover')}
+							/>
+						</label>
+
+						<AiOutlineDelete
+							className={classes.delete}
+							onClick={() => updatePicConfirm('deleteCover')}
+						/>
 					</div>
 				)}
 			</section>
@@ -81,18 +207,43 @@ const Profile = () => {
 				<div className={classes.userDetails}>
 					<div className={classes.userProfile}>
 						<div className={classes.profileImg}>
-							{user?.photo ? (
+							{user?.photo && !profilePic && (
+								<img
+									src={'/upload/' + encodeURIComponent(user?.photo)}
+									alt=''
+								/>
+							)}
+							{!user?.photo && !profilePic && (
+								<h5>{user?.prenom.charAt(0).toUpperCase()}</h5>
+							)}
+							{/* {user?.photo ? (
 								<img src={user?.photo} />
 							) : (
 								<h5>{user?.prenom.charAt(0).toUpperCase()}</h5>
+							)} */}
+							{profilePic && (
+								<img
+									className='editCoverPic'
+									src={URL.createObjectURL(profilePic)}
+									alt=''
+								/>
 							)}
 
 							{myId === +id && (
 								<div className={classes.editPhoto}>
-									<div className={classes.edit}>
+									<label className={`${classes.edit} ${classes.label}`}>
 										<AiOutlineEdit />
-									</div>
-									<div className={classes.delete}>
+										<input
+											type='file'
+											className={classes.input}
+											onChange={(e) => updatePic(e, 'profile')}
+										/>
+									</label>
+
+									<div
+										className={classes.delete}
+										onClick={() => updatePicConfirm('deleteProfile')}
+									>
 										<AiOutlineDelete />
 									</div>
 								</div>

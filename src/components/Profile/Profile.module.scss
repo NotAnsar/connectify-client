@@ -1,3 +1,36 @@
+.container,
+.coverImg {
+	input[type='file'] {
+		display: none;
+		cursor: pointer;
+	}
+	.label {
+		cursor: pointer;
+	}
+}
+.confirmUpdate {
+	position: fixed;
+	width: 100%;
+	bottom: 6rem;
+
+	transform: translateX(-50%, -50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 110;
+	gap: 2rem;
+
+	span {
+		padding: 1rem 3rem;
+		background-color: var(--info);
+		cursor: pointer;
+		border-radius: 6px;
+		&:nth-child(2) {
+			background-color: var(--error);
+		}
+	}
+}
+
 .container {
 	max-width: var(--max-width);
 	margin: 0 auto;

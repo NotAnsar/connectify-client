@@ -17,9 +17,12 @@ export const authSlice = createSlice({
 				'Authorization'
 			] = `Bearer ${state.token}`;
 		},
-		setUser: (state, action) => {
-			state.user = action.payload;
-			localStorage.setItem('user', action.payload);
+		setMyUser: (state, action) => {
+			const { user } = action.payload;
+
+			state.user = user;
+
+			localStorage.setItem('user', JSON.stringify(user));
 		},
 		removeToken: (state) => {
 			state.token = null;
@@ -54,7 +57,7 @@ export const authSlice = createSlice({
 
 export const {
 	setToken,
-	setUser,
+	setMyUser,
 	removeToken,
 	removeUser,
 	login,
