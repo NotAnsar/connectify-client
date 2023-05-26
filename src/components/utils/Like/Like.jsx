@@ -1,25 +1,23 @@
 import { useState } from 'react';
 import classes from '../Comment/Comment.module.scss';
 import ProfilePic from '../ProfilePic';
+import { Link } from 'react-router-dom';
+import { makeRequest } from '../../../axios';
 
-const Like = ({ isFollowing, like }) => {
-	const [following, setfollowing] = useState(isFollowing);
+const Like = ({ like }) => {
+	const [following, setfollowing] = useState(like.is_followed);
 
-	// console.log(like);
 	function followUser() {
-		// follow();
-		// async function follow() {
-		// 	try {
-		// 		await makeRequest.post(
-		// 			`/follow/${isFollowing === 1 ? 'unfollow' : 'follow'}`,
-		// 			{ user_id: like.id }
-		// 		);
-		// 	} catch (error) {
-		// 		console.log(error);
-		// 	}
+		follow();
+		async function follow() {
+			try {
+				await makeRequest.get(`/follow/${like.id}`);
 
-		// }
-		setfollowing(following === 1 ? 0 : 1);
+				setfollowing(following === 1 ? 0 : 1);
+			} catch (error) {
+				console.log(error);
+			}
+		}
 	}
 	return (
 		<div className={classes.like}>
@@ -30,12 +28,15 @@ const Like = ({ isFollowing, like }) => {
 						nom: like.nom,
 						prenom: like.prenom,
 						photo: like.photo,
+						id: like.id,
 					}}
 				/>
 				<div>
-					<h5>
-						{like.prenom} {like.nom}
-					</h5>
+					<Link to={`/profile/${like?.id}`}>
+						<h5>
+							{like.prenom} {like.nom}
+						</h5>
+					</Link>
 					<p>@{like.username}</p>
 				</div>
 			</div>

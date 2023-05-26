@@ -83,6 +83,23 @@
 				background-color: var(--secondary-color);
 				padding: 0.5rem 0.75rem;
 				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				.deleteContainer {
+					padding: 0.25rem;
+
+					svg {
+						width: 18px;
+						height: 18px;
+					}
+					&:hover {
+						background-color: var(--error);
+						color: white;
+						cursor: pointer;
+						border-radius: 5px;
+					}
+				}
 				h5 {
 					display: inline;
 					font-weight: 500;
@@ -186,6 +203,10 @@
 				h5 {
 					font-weight: 500;
 					font-size: 1rem;
+					cursor: pointer;
+					&:hover {
+						opacity: 0.7;
+					}
 				}
 				p {
 					font-size: 0.9rem;

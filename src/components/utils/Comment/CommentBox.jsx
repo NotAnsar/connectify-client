@@ -4,8 +4,16 @@ import Comment from './Comment';
 import classes from './Comment.module.scss';
 
 import { CgClose } from 'react-icons/cg';
+import { makeRequest } from '../../../axios';
 
-const CommentBox = ({ showComment, comments, commentChange }) => {
+const CommentBox = ({
+	showComment,
+	comments,
+	commentChange,
+	id,
+	setComment,
+	deleteComment,
+}) => {
 	const [newComment, setNewComment] = useState('');
 	const commentsContainerRef = useRef(null);
 
@@ -28,15 +36,31 @@ const CommentBox = ({ showComment, comments, commentChange }) => {
 
 	return (
 		<Fragment>
-			<div className={classes.bg} onClick={() => showComment(false)}></div>
+			<div
+				className={classes.bg}
+				onClick={() => {
+					showComment(false);
+					setComment('');
+				}}
+			></div>
 			<div className={classes.commentBox}>
 				<div className={classes.title}>
 					<h4>Comment</h4>
-					<CgClose onClick={() => showComment(false)} />
+					<CgClose
+						onClick={() => {
+							showComment(false);
+							setComment('');
+						}}
+					/>
 				</div>
 				<div className={classes.comments} ref={commentsContainerRef}>
 					{comments.map((c) => (
-						<Comment comment={c} key={c.id} />
+						<Comment
+							comment={c}
+							key={c.id}
+							id={id}
+							deleteComment={deleteComment}
+						/>
 					))}
 				</div>
 				<form className={classes.addComment} onSubmit={addComment}>

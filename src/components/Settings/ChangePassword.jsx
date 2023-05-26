@@ -1,107 +1,131 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { VscEye, VscEyeClosed } from 'react-icons/vsc';
 import validator from 'validator';
 import formClasses from '../Auth/Login.module.scss';
 import classes from './Settings.module.scss';
+import { makeRequest } from '../../axios';
+import Alert from '../utils/Alert';
+import Error from '../utils/Error';
 
 const ChangePassword = () => {
 	const [visibble, setvisibble] = useState(false);
 
 	const [error, setError] = useState(null);
+	const [alert, setAlert] = useState(null);
 	const [formData, setFormData] = useState({
-		password: '',
+		newPassword: '',
 		oldPassword: '',
 	});
 	const [formValid, setFormValid] = useState({
-		password: true,
+		newPassword: true,
 		oldPassword: true,
 	});
 
 	const formHandler = async (e) => {
 		e.preventDefault();
+
+		console.log(formData);
+		if (Object.values(formValid).every(Boolean)) {
+			try {
+				await makeRequest.post('auth/changePassword', formData);
+
+				setAlert('Password changed');
+			} catch (error) {
+				console.log(error);
+				setError(
+					error?.response?.data?.message
+						? error.response.data.message
+						: error.message
+				);
+			}
+		}
 	};
 
 	const handleChange = (e) => {
 		let value = e.target.value;
 		let name = e.target.name;
 
-		if (name === 'password' || name === 'oldPassword') {
-			setFormValid((prev) => ({
-				...prev,
-				[name]: validator.isStrongPassword(value, {
-					minLength: 8,
-					minLowercase: 1,
-					minNumbers: 1,
-					minSymbols: 1,
-					minUppercase: 0,
-				}),
-			}));
-		}
+		setFormData((prev) => ({ ...prev, [name]: value }));
+
+		setFormValid((prev) => ({
+			...prev,
+			[name]: validator.isStrongPassword(value, {
+				minLength: 8,
+				minLowercase: 1,
+				minNumbers: 1,
+				minSymbols: 1,
+				minUppercase: 0,
+			}),
+		}));
 	};
 	return (
-		<div className={classes.editProfileWrapper}>
-			<form onSubmit={formHandler}>
-				<div
-					className={`${formClasses.inputContainer} ${
-						formValid.oldPassword ? '' : formClasses.error
-					}`}
-				>
-					<input
-						type={visibble ? 'text' : 'password'}
-						required
-						name='oldPassword'
-						onChange={handleChange}
-					/>
-					<label>Old Password</label>
-					<span
-						onClick={() => setvisibble((a) => !a)}
-						className={formClasses.passwordIcon}
+		<Fragment>
+			{alert && <Alert msg={alert} setAlert={setAlert} />}
+			{error && <Error msg={error} setAlert={setError} />}
+			<div className={classes.editProfileWrapper}>
+				<form onSubmit={formHandler}>
+					<div
+						className={`${formClasses.inputContainer} ${
+							formValid.oldPassword ? '' : formClasses.error
+						}`}
 					>
-						{visibble ? <VscEye /> : <VscEyeClosed />}
-					</span>
-					<div className={formClasses.info}>
-						<AiOutlineInfoCircle />
+						<input
+							type={visibble ? 'text' : 'password'}
+							required
+							name='oldPassword'
+							onChange={handleChange}
+						/>
+						<label>Old Password</label>
+						<span
+							onClick={() => setvisibble((a) => !a)}
+							className={formClasses.passwordIcon}
+						>
+							{visibble ? <VscEye /> : <VscEyeClosed />}
+						</span>
+						<div className={formClasses.info}>
+							<AiOutlineInfoCircle />
+						</div>
+						<span className={formClasses.msg}>
+							password must be at least 8 characters long with 1 lowercase 1
+							number and 1 symbol
+						</span>
 					</div>
-					<span className={formClasses.msg}>
-						password must be at least 8 characters long with 1 lowercase 1
-						number and 1 symbol
-					</span>
-				</div>
-				<div
-					className={`${formClasses.inputContainer} ${
-						formValid.password ? '' : formClasses.error
-					}`}
-				>
-					<input
-						type={visibble ? 'text' : 'password'}
-						required
-						name='paassword'
-						onChange={handleChange}
-					/>
-					<label>New Password</label>
-					<span
-						onClick={() => setvisibble((a) => !a)}
-						className={formClasses.passwordIcon}
+					<div
+						className={`${formClasses.inputContainer} ${
+							formValid.newPassword ? '' : formClasses.error
+						}`}
 					>
-						{visibble ? <VscEye /> : <VscEyeClosed />}
-					</span>
-					<div className={formClasses.info}>
-						<AiOutlineInfoCircle />
+						<input
+							type={visibble ? 'text' : 'password'}
+							required
+							name='newPassword'
+							onChange={handleChange}
+						/>
+						<label>New Password</label>
+						<span
+							onClick={() => setvisibble((a) => !a)}
+							className={formClasses.passwordIcon}
+						>
+							{visibble ? <VscEye /> : <VscEyeClosed />}
+						</span>
+						<div className={formClasses.info}>
+							<AiOutlineInfoCircle />
+						</div>
+						<span className={formClasses.msg}>
+							password must be at least 8 characters long with 1 lowercase 1
+							number and 1 symbol
+						</span>
 					</div>
-					<span className={formClasses.msg}>
-						password must be at least 8 characters long with 1 lowercase 1
-						number and 1 symbol
-					</span>
-				</div>
 
-				<input
-					className={classes.updateBtn}
-					type='submit'
-					value='Change Password'
-				/>
-			</form>
-		</div>
+					<input
+						className={classes.updateBtn}
+						type='submit'
+						value='Change Password'
+					/>
+				</form>
+			</div>
+		</Fragment>
 	);
 };
 

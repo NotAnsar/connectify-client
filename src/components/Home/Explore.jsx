@@ -17,6 +17,11 @@ const Explore = () => {
 
 	useEffect(() => {
 		getPosts();
+
+		return () => {
+			setPosts('');
+			setIsLoading(true);
+		};
 	}, []);
 
 	async function getPosts() {

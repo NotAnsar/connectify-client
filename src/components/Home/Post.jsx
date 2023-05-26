@@ -20,7 +20,6 @@ const Post = ({ post, me, getPosts }) => {
 	const [likes, setLikes] = useState('');
 	const [saved, setSaved] = useState(post.is_saved);
 	const [liked, setLiked] = useState(post.is_liked);
-	// const [followed, setFollowed] = useState(post.is_followed);
 
 	const commentChange = (newComment, status = 'added') => {
 		if (status === 'added') {
@@ -48,6 +47,18 @@ const Post = ({ post, me, getPosts }) => {
 			}
 		}
 	};
+	async function deleteComment(id) {
+		try {
+			console.log(id);
+			await makeRequest.delete(`/comments/${id}`);
+
+			setComment(comment.filter((c) => c.id !== id));
+			post.comments--;
+			console.log('comment deleted');
+		} catch (error) {
+			console.log('error');
+		}
+	}
 
 	async function deletePost(postId) {
 		try {
@@ -58,6 +69,7 @@ const Post = ({ post, me, getPosts }) => {
 			console.log(error);
 		}
 	}
+
 	useEffect(() => {
 		document.body.style.overflow = showC || showL ? 'hidden' : '';
 	}, [showC, showL]);
@@ -76,22 +88,6 @@ const Post = ({ post, me, getPosts }) => {
 			}
 		}
 	}
-
-	// function followUser() {
-	// 	follow();
-	// 	async function follow() {
-	// 		try {
-	// 			await makeRequest.post(
-	// 				`/follow/${followed === 1 ? 'unfollow' : 'follow'}`,
-	// 				{ user_id: post.user_id }
-	// 			);
-
-	// 			setFollowed(followed === 1 ? 0 : 1);
-	// 		} catch (error) {
-	// 			console.log(error);
-	// 		}
-	// 	}
-	// }
 
 	function likePost() {
 		like();
@@ -125,12 +121,12 @@ const Post = ({ post, me, getPosts }) => {
 	}
 
 	function showLike() {
+		console.log('gettting likes');
 		getLikes();
 		async function getLikes() {
 			try {
 				const res = await makeRequest.get(`likes/${post.id}`);
 
-				console.log(res.data.likes);
 				setLikes(res.data.likes);
 			} catch (error) {
 				console.log(error);
@@ -145,14 +141,19 @@ const Post = ({ post, me, getPosts }) => {
 		<Fragment>
 			{comment && showC && (
 				<CommentBox
+					deleteComment={deleteComment}
 					showComment={setShowC}
 					commentChange={commentChange}
 					comments={comment}
 					postId={post.id}
+					id={user.id}
+					setComment={setComment}
 				/>
 			)}
 
-			{showL && likes && <LikeBox likes={likes} showLikes={setShowL} />}
+			{showL && likes && (
+				<LikeBox likes={likes} showLikes={setShowL} setLikes={setLikes} />
+			)}
 
 			<Card>
 				<div className={classes.cardContainer}>

@@ -4,19 +4,30 @@ import classes from '../Comment/Comment.module.scss';
 import { CgClose } from 'react-icons/cg';
 import Like from './Like';
 
-const LikeBox = ({ showLikes, likes }) => {
+const LikeBox = ({ showLikes, likes, setLikes }) => {
 	console.log(likes);
 	return (
 		<Fragment>
-			<div className={classes.bg} onClick={() => showLikes(false)}></div>
+			<div
+				className={classes.bg}
+				onClick={() => {
+					showLikes(false);
+					setLikes('');
+				}}
+			></div>
 			<div className={classes.likeBox}>
 				<div className={classes.title}>
 					<h4>Likes</h4>
-					<CgClose onClick={() => showLikes(false)} />
+					<CgClose
+						onClick={() => {
+							showLikes(false);
+							setLikes('');
+						}}
+					/>
 				</div>
 				<div className={classes.likes}>
 					{likes.map((l) => (
-						<Like like={l} isFollowing={l.is_followed} key={l.id} />
+						<Like like={l} key={l.id} />
 					))}
 				</div>
 			</div>

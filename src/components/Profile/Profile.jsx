@@ -16,7 +16,7 @@ import {
 import Post from '../Home/Post';
 
 import { makeRequest } from '../../axios';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../utils/Alert';
 import { setMyUser } from '../../store/auth';
@@ -35,6 +35,16 @@ const Profile = () => {
 	const [error, setError] = useState(false);
 	const [alert, setalert] = useState(false);
 
+	const [followed, setFollowed] = useState();
+
+	useEffect(() => {
+		getMyPosts();
+	}, [id, me.photo, me.coverPhoto]);
+
+	useEffect(() => {
+		document.body.style.overflow = coverpic || profilePic ? 'hidden' : '';
+	}, [coverpic, profilePic]);
+
 	async function getMyPosts() {
 		try {
 			const url1 = makeRequest.get(`users/profile/${id}`);
@@ -44,6 +54,7 @@ const Profile = () => {
 
 			setUser(res1.data.user);
 			setPosts(res2.data.posts);
+			setFollowed(res1.data.user.is_followed);
 
 			setLoading(false);
 		} catch (error) {
@@ -116,24 +127,9 @@ const Profile = () => {
 		}
 	}
 
-	useEffect(() => {
-		getMyPosts();
-	}, [id, me.photo, me.coverPhoto]);
-
-	useEffect(() => {
-		document.body.style.overflow = coverpic || profilePic ? 'hidden' : '';
-	}, [coverpic || profilePic]);
-
 	function postDeleted() {
 		getMyPosts();
 		setalert('Post Deleted');
-	}
-
-	if (error) {
-		return <h1>{error}</h1>;
-	}
-	if (loading) {
-		return <h1>Loading</h1>;
 	}
 
 	function updatePic(e, type) {
@@ -144,6 +140,26 @@ const Profile = () => {
 		if (type === 'profile') {
 			setProfilePic(e.target.files[0]);
 			setcoverpic();
+		}
+	}
+
+	if (error) {
+		return <h1>{error}</h1>;
+	}
+	if (loading) {
+		return <h1>Loading</h1>;
+	}
+
+	function followUser() {
+		follow();
+		async function follow() {
+			try {
+				await makeRequest.get(`/follow/${user.id}`);
+
+				setFollowed(followed === 1 ? 0 : 1);
+			} catch (error) {
+				console.log(error);
+			}
 		}
 	}
 
@@ -216,11 +232,7 @@ const Profile = () => {
 							{!user?.photo && !profilePic && (
 								<h5>{user?.prenom.charAt(0).toUpperCase()}</h5>
 							)}
-							{/* {user?.photo ? (
-								<img src={user?.photo} />
-							) : (
-								<h5>{user?.prenom.charAt(0).toUpperCase()}</h5>
-							)} */}
+
 							{profilePic && (
 								<img
 									className='editCoverPic'
@@ -271,27 +283,23 @@ const Profile = () => {
 							<p>Posts</p>
 						</div>
 						{+id !== myId ? (
-							user.is_followed ? (
-								<div className={`${classes.box} ${classes.unfollow}`}>
-									<span>
-										<AiOutlineMinus />
-									</span>
-									<p>Unfollow</p>
-								</div>
-							) : (
-								<div className={`${classes.box} ${classes.follow}`}>
-									<span>
-										<AiOutlinePlus />
-									</span>
-									<p>Follow</p>
-								</div>
-							)
-						) : (
-							<div className={`${classes.box} ${classes.editProfile}`}>
-								<span>
-									<FaUserEdit />
-								</span>
+							<div
+								className={`${classes.box} ${
+									followed ? classes.unfollow : classes.follow
+								}`}
+								onClick={followUser}
+							>
+								<span>{followed ? <AiOutlineMinus /> : <AiOutlinePlus />}</span>
+								<p>{followed ? 'Following' : 'Follow'}</p>
 							</div>
+						) : (
+							<Link to={'/settings'}>
+								<div className={`${classes.box} ${classes.editProfile}`}>
+									<span>
+										<FaUserEdit />
+									</span>
+								</div>
+							</Link>
 						)}
 					</div>
 				</div>
