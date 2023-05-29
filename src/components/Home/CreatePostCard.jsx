@@ -9,7 +9,7 @@ import {
 	AiOutlineDelete,
 } from 'react-icons/ai';
 
-const CreatePostCard = ({ addNewPost }) => {
+const CreatePostCard = ({ addNewPost, name }) => {
 	const [content, setContent] = useState('');
 	const [file, setFile] = useState();
 
@@ -36,7 +36,7 @@ const CreatePostCard = ({ addNewPost }) => {
 						type='text'
 						onChange={(e) => setContent(e.target.value)}
 						value={content}
-						placeholder='What’s on your mind, Ansar ?'
+						placeholder={`What’s on your mind, ${name} ?`}
 					/>
 				</div>
 				{file && (

@@ -16,7 +16,7 @@ import {
 import Post from '../Home/Post';
 
 import { makeRequest } from '../../axios';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../utils/Alert';
 import { setMyUser } from '../../store/auth';
@@ -26,7 +26,6 @@ const Profile = () => {
 	const myId = me.id;
 	const { id } = useParams();
 	const dispatch = useDispatch();
-
 	const [posts, setPosts] = useState('');
 	const [user, setUser] = useState('');
 	const [coverpic, setcoverpic] = useState();
@@ -34,11 +33,23 @@ const Profile = () => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 	const [alert, setalert] = useState(false);
-
 	const [followed, setFollowed] = useState();
+	const location = useLocation();
+
+	const alertMsg = location.state && location.state.alertMsg;
+
+	useEffect(() => {
+		if (alertMsg) {
+			setalert(alertMsg);
+		}
+	}, [alertMsg]);
 
 	useEffect(() => {
 		getMyPosts();
+		return () => {
+			setPosts('');
+			setLoading(true);
+		};
 	}, [id, me.photo, me.coverPhoto]);
 
 	useEffect(() => {
@@ -131,6 +142,10 @@ const Profile = () => {
 		getMyPosts();
 		setalert('Post Deleted');
 	}
+	function postUpdated() {
+		getMyPosts();
+		setalert('Post Updated');
+	}
 
 	function updatePic(e, type) {
 		if (type === 'cover') {
@@ -165,7 +180,13 @@ const Profile = () => {
 
 	return (
 		<Fragment>
-			{alert && <Alert msg={alert} setAlert={setalert} color={'red'} />}
+			{alert && (
+				<Alert
+					msg={alert}
+					setAlert={setalert}
+					color={alert.includes('Updated') ? '' : 'red'}
+				/>
+			)}
 			{(coverpic || profilePic) && (
 				<div className={classes.confirmUpdate}>
 					<span
@@ -306,11 +327,7 @@ const Profile = () => {
 				<div className={classes.postsInfo}>
 					<div className={classes.info}>
 						<h2>Info</h2>
-						<p>
-							Lorem ipsum dolor sit amet, cons ectetur adipiscing elit, sed do
-							eiusmod tempor incididunt ut labore et.Lorem ipsum dolor sit amet,
-							cons ectetur adipiscing elit,.
-						</p>
+						<p>{user?.bio}</p>
 
 						<div className={classes.line}></div>
 
@@ -347,7 +364,8 @@ const Profile = () => {
 									post={p}
 									key={p.id}
 									me={+id === myId}
-									getPosts={postDeleted}
+									postDeleted={postDeleted}
+									postUpdated={postUpdated}
 								/>
 							))}
 					</div>

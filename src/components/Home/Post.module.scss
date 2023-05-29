@@ -43,13 +43,10 @@
 					background: var(--secondary-color);
 				}
 			}
-			// .edit {
-			// 	background: var(--info);
-			// }
+
 			.delete {
-				// background: var(--error);
-				// color: white;
 				&:hover {
+					color: white;
 					background: var(--error);
 				}
 			}

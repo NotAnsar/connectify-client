@@ -3,17 +3,28 @@ import { Fragment, useEffect, useState } from 'react';
 import CreatePostCard from './CreatePostCard';
 import Post from './Post';
 import classes from './Home.module.scss';
-import ProfileCard from './ProfileCard';
 
 import { makeRequest } from '../../axios';
 import { useSelector } from 'react-redux';
 import Alert from '../utils/Alert';
+import { useLocation } from 'react-router-dom';
+import RightNav from './RightNav';
 
 const Explore = () => {
 	const { user: me } = useSelector((state) => state.auth);
 	const [posts, setPosts] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 	const [alert, setalert] = useState(false);
+
+	const location = useLocation();
+
+	const alertMsg = location.state && location.state.alertMsg;
+
+	useEffect(() => {
+		if (alertMsg) {
+			setalert(alertMsg);
+		}
+	}, [alertMsg]);
 
 	useEffect(() => {
 		getPosts();
@@ -77,6 +88,11 @@ const Explore = () => {
 		setalert('Post Deleted');
 	}
 
+	function postUpdated() {
+		getPosts();
+		setalert('Post Updated');
+	}
+
 	return (
 		<Fragment>
 			{alert && (
@@ -87,7 +103,7 @@ const Explore = () => {
 				/>
 			)}
 			<section className={classes.middle}>
-				<CreatePostCard addNewPost={addNewPost} />
+				<CreatePostCard name={me.prenom} addNewPost={addNewPost} />
 				{isLoading ? (
 					<h1>Loading</h1>
 				) : (
@@ -97,14 +113,13 @@ const Explore = () => {
 							key={p.id}
 							me={p.user_id === me.id}
 							friend={p.user_id !== me.id}
-							getPosts={postDeleted}
+							postDeleted={postDeleted}
+							postUpdated={postUpdated}
 						/>
 					))
 				)}
 			</section>
-			<article className={classes.right}>
-				<ProfileCard />
-			</article>
+			<RightNav />
 		</Fragment>
 	);
 };

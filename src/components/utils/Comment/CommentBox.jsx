@@ -4,7 +4,6 @@ import Comment from './Comment';
 import classes from './Comment.module.scss';
 
 import { CgClose } from 'react-icons/cg';
-import { makeRequest } from '../../../axios';
 
 const CommentBox = ({
 	showComment,

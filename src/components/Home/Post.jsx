@@ -3,6 +3,8 @@ import classes from './Post.module.scss';
 import Card from '../utils/Card';
 import CommentBox from '../utils/Comment/CommentBox';
 import ProfilePic from '../utils/ProfilePic';
+import UpdatePost from '../utils/UpdatePost/UpdatePost';
+
 import { FiMessageCircle, FiHeart, FiBookmark } from 'react-icons/fi';
 import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
@@ -12,10 +14,11 @@ import LikeBox from '../utils/Like/LikeBox';
 
 import { Link } from 'react-router-dom';
 
-const Post = ({ post, me, getPosts }) => {
+const Post = ({ post, me, postDeleted, postUpdated }) => {
 	const { user } = useSelector((state) => state.auth);
 	const [showL, setShowL] = useState(false);
 	const [showC, setShowC] = useState(false);
+	const [showE, setShowE] = useState(false);
 	const [comment, setComment] = useState('');
 	const [likes, setLikes] = useState('');
 	const [saved, setSaved] = useState(post.is_saved);
@@ -47,14 +50,13 @@ const Post = ({ post, me, getPosts }) => {
 			}
 		}
 	};
+
 	async function deleteComment(id) {
 		try {
-			console.log(id);
 			await makeRequest.delete(`/comments/${id}`);
 
 			setComment(comment.filter((c) => c.id !== id));
 			post.comments--;
-			console.log('comment deleted');
 		} catch (error) {
 			console.log('error');
 		}
@@ -64,15 +66,15 @@ const Post = ({ post, me, getPosts }) => {
 		try {
 			await makeRequest.delete(`posts/${postId}`);
 
-			getPosts();
+			postDeleted();
 		} catch (error) {
 			console.log(error);
 		}
 	}
 
 	useEffect(() => {
-		document.body.style.overflow = showC || showL ? 'hidden' : '';
-	}, [showC, showL]);
+		document.body.style.overflow = showC || showL || showE ? 'hidden' : '';
+	}, [showC, showL, showE]);
 
 	function savePost() {
 		save();
@@ -121,7 +123,6 @@ const Post = ({ post, me, getPosts }) => {
 	}
 
 	function showLike() {
-		console.log('gettting likes');
 		getLikes();
 		async function getLikes() {
 			try {
@@ -148,6 +149,14 @@ const Post = ({ post, me, getPosts }) => {
 					postId={post.id}
 					id={user.id}
 					setComment={setComment}
+				/>
+			)}
+			{showE && (
+				<UpdatePost
+					name={user.prenom}
+					showUpdated={setShowE}
+					post={post}
+					postUpdated={postUpdated}
 				/>
 			)}
 
@@ -177,13 +186,9 @@ const Post = ({ post, me, getPosts }) => {
 							</span>
 						</div>
 
-						{/* <div className={`${classes.userBtn} ${classes.follow}`}>
-						<span>Follow</span>
-					</div> */}
-
 						{me && (
 							<div className={classes.myPost}>
-								<span className={classes.edit}>
+								<span className={classes.edit} onClick={() => setShowE(true)}>
 									<AiOutlineEdit />
 								</span>
 								<span
@@ -194,28 +199,6 @@ const Post = ({ post, me, getPosts }) => {
 								</span>
 							</div>
 						)}
-						{/* {me ? (
-							<div className={classes.myPost}>
-								<span className={classes.edit}>
-									<AiOutlineEdit />
-								</span>
-								<span
-									className={classes.delete}
-									onClick={() => deletePost(post.id)}
-								>
-									<AiOutlineDelete />
-								</span>
-							</div>
-						) : (
-							<div
-								onClick={() => followUser()}
-								className={`${classes.userBtn} ${
-									followed ? classes.following : classes.follow
-								}`}
-							>
-								<span> {followed ? 'Following' : 'Follow'}</span>
-							</div>
-						)} */}
 					</div>
 
 					{post.img && (

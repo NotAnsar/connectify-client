@@ -2,13 +2,14 @@ import { Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { makeRequest } from '../../axios';
 import classes from './Home.module.scss';
-import { FiBookmark } from 'react-icons/fi';
+import { FiRss } from 'react-icons/fi';
 
 import Post from './Post';
+
 import Alert from '../utils/Alert';
 import RightNav from './RightNav';
 
-const SavedPosts = () => {
+const Feed = () => {
 	const { token, user: me } = useSelector((state) => state.auth);
 	const [posts, setPosts] = useState('');
 	const [alert, setalert] = useState(false);
@@ -44,6 +45,7 @@ const SavedPosts = () => {
 		getPosts();
 		setalert('Post Updated');
 	}
+
 	return (
 		<Fragment>
 			{alert && (
@@ -55,8 +57,8 @@ const SavedPosts = () => {
 			)}
 			<section className={classes.middle}>
 				<div className={classes.savedPost}>
-					<h1>My Saved Posts</h1>
-					<FiBookmark />
+					<h1>Feed</h1>
+					<FiRss style={{ fill: 'none' }} />
 				</div>
 				{posts === '' ? (
 					<h1>Loading</h1>
@@ -81,4 +83,4 @@ const SavedPosts = () => {
 	);
 };
 
-export default SavedPosts;
+export default Feed;

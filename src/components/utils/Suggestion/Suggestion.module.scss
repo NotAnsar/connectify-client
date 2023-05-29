@@ -1,0 +1,58 @@
+.suggestion {
+	padding: 1rem;
+	p {
+		font-size: 15px;
+		// font-size: 15px;
+		font-weight: 500;
+	}
+	.users {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-top: 1rem;
+		.user {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			.info {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				.name {
+					display: flex;
+					flex-direction: column;
+				}
+
+				p {
+					font-size: 14px;
+					font-weight: 450;
+				}
+				span {
+					font-size: 13px;
+				}
+			}
+			.follow,
+			.unfollow {
+				color: var(--primary-color);
+				font-size: 13px;
+				font-weight: 500;
+				cursor: pointer;
+			}
+			.unfollow {
+				color: var(--grey);
+			}
+		}
+	}
+}
+
+.online,
+.offline {
+	height: 10px;
+	width: 10px;
+	border-radius: 50%;
+	background-color: var(--primary-color);
+}
+
+.offline {
+	background-color: var(--error);
+}

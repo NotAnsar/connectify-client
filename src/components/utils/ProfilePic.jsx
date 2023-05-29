@@ -1,10 +1,23 @@
 import { useSelector } from 'react-redux';
 import classes from './Layout.module.scss';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const ProfilePic = ({ width = '40px', user, withlink = true }) => {
 	const me = useSelector((state) => state.auth.user);
 	if (user === undefined) user = me;
+	const { socket } = useSelector((state) => state.socket);
+	const [onlineUsers, setOnlineUsers] = useState([]);
+
+	useEffect(() => {
+		if (socket) {
+			socket.on('get-users', (a) =>
+				setOnlineUsers(a.map(({ userId }) => userId))
+			);
+		}
+	}, [socket]);
+
+	console.log(onlineUsers, user.id);
 
 	return (
 		<div
@@ -14,32 +27,20 @@ const ProfilePic = ({ width = '40px', user, withlink = true }) => {
 				minWidth: width,
 				maxWidth: width,
 			}}
-			className={classes.profileImg}
+			className={`${classes.profileImg}`}
 		>
-			{/* <>
-				{user.photo ? (
-					withlink ? (
-						<Link to={`/profile/${user?.id}`}>
-							<img src={user.photo} alt='' />
-						</Link>
-					) : (
-						<img src={user.photo} alt='' />
-					)
-				) : withlink ? (
-					<Link to={`/profile/${user?.id}`}>
-						<span className={classes.profile}>
-							{user.prenom.charAt(0).toUpperCase()}
-						</span>
-					</Link>
-				) : (
-					<span className={classes.profile}>
-						{user.prenom.charAt(0).toUpperCase()}
-					</span>
-				)}
-			</> */}
 			<>
 				{withlink ? (
-					<Link to={`/profile/${user?.id}`}>
+					<Link
+						to={`/profile/${user?.id}`}
+						style={{
+							height: width,
+							width: width,
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+						}}
+					>
 						{user.photo ? (
 							<img src={'/upload/' + encodeURIComponent(user?.photo)} alt='' />
 						) : (

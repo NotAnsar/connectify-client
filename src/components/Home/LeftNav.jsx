@@ -1,7 +1,12 @@
 import classes from './LeftNav.module.scss';
-import { FiSettings, FiUsers, FiBookmark } from 'react-icons/fi';
-import { BiHomeAlt } from 'react-icons/bi';
-import { BsPalette } from 'react-icons/bs';
+import {
+	FiSettings,
+	FiBookmark,
+	FiMessageSquare,
+	FiHome,
+	FiRss,
+} from 'react-icons/fi';
+
 import { AiOutlineLogout } from 'react-icons/ai';
 import LeftNavItem from './LeftNavItem';
 import Card from '../utils/Card';
@@ -18,7 +23,7 @@ const LeftNav = () => {
 			<ul className={classes.linksContainer}>
 				<LeftNavItem
 					clicked={location.pathname === '/'}
-					Logo={BiHomeAlt}
+					Logo={FiHome}
 					msg={'Home'}
 				/>
 				<LeftNavItem
@@ -28,10 +33,10 @@ const LeftNav = () => {
 					msg={'Settings'}
 				/>
 				<LeftNavItem
-					link='newfriends'
-					Logo={FiUsers}
-					clicked={location.pathname === '/newfriends'}
-					msg={'Find Friends'}
+					link='messages'
+					Logo={FiMessageSquare}
+					clicked={location.pathname === '/messages'}
+					msg={'Conversations'}
 				/>
 				<LeftNavItem
 					link='savedPosts'
@@ -40,11 +45,12 @@ const LeftNav = () => {
 					msg={'Saved Posts'}
 				/>
 				<LeftNavItem
-					link='theme'
-					clicked={location.pathname === '/theme'}
-					Logo={BsPalette}
-					msg={'Theme'}
+					link='feed'
+					clicked={location.pathname === '/feed'}
+					Logo={FiRss}
+					msg={'Feed'}
 				/>
+
 				<span onClick={() => dispatch(logout())}>
 					<LeftNavItem logout={true} Logo={AiOutlineLogout} msg={'Log out'} />
 				</span>

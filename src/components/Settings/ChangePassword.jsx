@@ -5,14 +5,14 @@ import validator from 'validator';
 import formClasses from '../Auth/Login.module.scss';
 import classes from './Settings.module.scss';
 import { makeRequest } from '../../axios';
-import Alert from '../utils/Alert';
 import Error from '../utils/Error';
+import { useNavigate } from 'react-router-dom';
 
 const ChangePassword = () => {
 	const [visibble, setvisibble] = useState(false);
 
 	const [error, setError] = useState(null);
-	const [alert, setAlert] = useState(null);
+	const navigate = useNavigate();
 	const [formData, setFormData] = useState({
 		newPassword: '',
 		oldPassword: '',
@@ -30,7 +30,9 @@ const ChangePassword = () => {
 			try {
 				await makeRequest.post('auth/changePassword', formData);
 
-				setAlert('Password changed');
+				navigate('/', {
+					state: { alertMsg: 'Your Password changed' },
+				});
 			} catch (error) {
 				console.log(error);
 				setError(
@@ -61,7 +63,6 @@ const ChangePassword = () => {
 	};
 	return (
 		<Fragment>
-			{alert && <Alert msg={alert} setAlert={setAlert} />}
 			{error && <Error msg={error} setAlert={setError} />}
 			<div className={classes.editProfileWrapper}>
 				<form onSubmit={formHandler}>

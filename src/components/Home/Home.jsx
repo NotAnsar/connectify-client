@@ -1,19 +1,15 @@
 import { Fragment } from 'react';
 import Navbar from '../Navbar/Navbar';
 import classes from './Home.module.scss';
-
 import Layout from '../utils/Layout';
 import LeftNav from './LeftNav';
-
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Explore from './Explore';
-
 import SavedPosts from './SavedPosts';
-
-import Theme from './Theme.jsx';
 import ProfileCard from './ProfileCard';
-import Followers from './Followers';
 import Settings from '../Settings/Settings';
+import Conversation from '../Conversation/Conversation';
+import Feed from './Feed';
 
 const Home = () => {
 	return (
@@ -30,9 +26,9 @@ const Home = () => {
 					<Routes>
 						<Route path='' element={<Explore />} />
 						<Route path='settings/*' element={<Settings />} />
-						<Route path='newfriends' element={<Followers />} />
+						<Route path='messages' element={<Conversation />} />
 						<Route path='savedPosts' element={<SavedPosts />} />
-						<Route path='theme' element={<Theme />} />
+						<Route path='feed' element={<Feed />} />
 						{<Route path='*' element={<Navigate to='/' />} />}
 					</Routes>
 				</main>

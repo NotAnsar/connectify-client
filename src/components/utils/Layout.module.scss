@@ -18,11 +18,12 @@
 }
 
 .profileImg {
+	position: relative;
 	height: 40px;
 	width: 40px;
 	background-color: var(--grey);
 	color: white;
-	border-radius: 50%;
+	border-radius: 5px;
 	overflow: hidden;
 	user-select: none;
 	display: flex;
@@ -60,6 +61,7 @@
 	border-radius: 3px;
 	background-color: var(--error);
 	cursor: pointer;
+	color: white;
 	svg {
 		height: 20px;
 		width: 20px;
@@ -72,4 +74,13 @@
 
 .alertWarning {
 	background-color: var(--warning);
+}
+
+.online {
+	outline: var(--primary-color) solid 2px;
+	outline-offset: 3px;
+}
+.offline {
+	outline: var(--error) solid 2px;
+	outline-offset: 3px;
 }
