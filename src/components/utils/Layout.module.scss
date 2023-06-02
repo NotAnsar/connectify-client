@@ -84,3 +84,32 @@
 	outline: var(--error) solid 2px;
 	outline-offset: 3px;
 }
+
+.loadercontainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 70vh;
+	width: 100%;
+
+	&.fullheight {
+		height: 100vh;
+	}
+	.customloader {
+		width: 75px;
+		height: 75px;
+		border-radius: 50%;
+		background: conic-gradient(#0000 10%, #0e9c6f);
+		-webkit-mask: radial-gradient(
+			farthest-side,
+			#0000 calc(100% - 14px),
+			#000 0
+		);
+		animation: s3 1s infinite linear;
+	}
+	@keyframes s3 {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+}

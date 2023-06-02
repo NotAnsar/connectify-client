@@ -7,9 +7,10 @@ import { FiBookmark } from 'react-icons/fi';
 import Post from './Post';
 import Alert from '../utils/Alert';
 import RightNav from './RightNav';
+import Loader from '../utils/Loader';
 
 const SavedPosts = () => {
-	const { token, user: me } = useSelector((state) => state.auth);
+	const { user: me } = useSelector((state) => state.auth);
 	const [posts, setPosts] = useState('');
 	const [alert, setalert] = useState(false);
 
@@ -22,11 +23,7 @@ const SavedPosts = () => {
 
 	async function getPosts() {
 		try {
-			const res = await makeRequest.get('posts/saved', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
+			const res = await makeRequest.get('posts/saved');
 
 			setPosts(res.data.posts);
 		} catch (error) {
@@ -44,6 +41,11 @@ const SavedPosts = () => {
 		getPosts();
 		setalert('Post Updated');
 	}
+
+	if (posts === '') {
+		return <Loader />;
+	}
+
 	return (
 		<Fragment>
 			{alert && (
@@ -58,11 +60,8 @@ const SavedPosts = () => {
 					<h1>My Saved Posts</h1>
 					<FiBookmark />
 				</div>
-				{posts === '' ? (
-					<h1>Loading</h1>
-				) : (
-					posts.length === 0 && <p>{"You haven't saved Any posts"}</p>
-				)}
+
+				{posts.length === 0 && <p>{"You haven't saved Any posts"}</p>}
 
 				{posts.length > 0 &&
 					posts &&

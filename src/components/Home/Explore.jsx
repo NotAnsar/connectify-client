@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import Alert from '../utils/Alert';
 import { useLocation } from 'react-router-dom';
 import RightNav from './RightNav';
+import Loader from '../utils/Loader';
 
 const Explore = () => {
 	const { user: me } = useSelector((state) => state.auth);
@@ -93,6 +94,13 @@ const Explore = () => {
 		setalert('Post Updated');
 	}
 
+	if (isLoading) {
+		return <Loader />;
+	}
+	if (!isLoading && !posts) {
+		return <p>Network Error</p>;
+	}
+
 	return (
 		<Fragment>
 			{alert && (
@@ -102,22 +110,19 @@ const Explore = () => {
 					color={alert.split(' ')[1] === 'Deleted' ? 'red' : ''}
 				/>
 			)}
+
 			<section className={classes.middle}>
 				<CreatePostCard name={me.prenom} addNewPost={addNewPost} />
-				{isLoading ? (
-					<h1>Loading</h1>
-				) : (
-					posts.map((p) => (
-						<Post
-							post={p}
-							key={p.id}
-							me={p.user_id === me.id}
-							friend={p.user_id !== me.id}
-							postDeleted={postDeleted}
-							postUpdated={postUpdated}
-						/>
-					))
-				)}
+				{posts.map((p) => (
+					<Post
+						post={p}
+						key={p.id}
+						me={p.user_id === me.id}
+						friend={p.user_id !== me.id}
+						postDeleted={postDeleted}
+						postUpdated={postUpdated}
+					/>
+				))}
 			</section>
 			<RightNav />
 		</Fragment>

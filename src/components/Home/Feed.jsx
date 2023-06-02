@@ -8,14 +8,16 @@ import Post from './Post';
 
 import Alert from '../utils/Alert';
 import RightNav from './RightNav';
+import Loader from '../utils/Loader';
 
 const Feed = () => {
-	const { token, user: me } = useSelector((state) => state.auth);
+	const { user: me } = useSelector((state) => state.auth);
 	const [posts, setPosts] = useState('');
 	const [alert, setalert] = useState(false);
 
 	useEffect(() => {
 		getPosts();
+
 		return () => {
 			setPosts('');
 		};
@@ -23,11 +25,7 @@ const Feed = () => {
 
 	async function getPosts() {
 		try {
-			const res = await makeRequest.get('posts/saved', {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
+			const res = await makeRequest.get('posts');
 
 			setPosts(res.data.posts);
 		} catch (error) {
@@ -35,7 +33,6 @@ const Feed = () => {
 			setPosts(null);
 		}
 	}
-
 	function postDeleted() {
 		getPosts();
 		setalert('Post Deleted');
@@ -46,6 +43,9 @@ const Feed = () => {
 		setalert('Post Updated');
 	}
 
+	if (posts === '') {
+		return <Loader />;
+	}
 	return (
 		<Fragment>
 			{alert && (
@@ -60,11 +60,8 @@ const Feed = () => {
 					<h1>Feed</h1>
 					<FiRss style={{ fill: 'none' }} />
 				</div>
-				{posts === '' ? (
-					<h1>Loading</h1>
-				) : (
-					posts.length === 0 && <p>{"You haven't saved Any posts"}</p>
-				)}
+
+				{posts.length === 0 && <p>{"You haven't saved Any posts"}</p>}
 
 				{posts.length > 0 &&
 					posts &&

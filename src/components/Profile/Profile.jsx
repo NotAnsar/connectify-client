@@ -20,6 +20,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../utils/Alert';
 import { setMyUser } from '../../store/auth';
+import Loader from '../utils/Loader';
 
 const Profile = () => {
 	const { user: me } = useSelector((state) => state.auth);
@@ -46,6 +47,7 @@ const Profile = () => {
 
 	useEffect(() => {
 		getMyPosts();
+
 		return () => {
 			setPosts('');
 			setLoading(true);
@@ -56,17 +58,19 @@ const Profile = () => {
 		document.body.style.overflow = coverpic || profilePic ? 'hidden' : '';
 	}, [coverpic, profilePic]);
 
-	async function getMyPosts() {
+	const getMyPosts = async () => {
 		try {
+			console.log(id);
 			const url1 = makeRequest.get(`users/profile/${id}`);
 			const url2 = makeRequest.get(`posts/${id}`);
 
 			const [res1, res2] = await Promise.all([url1, url2]);
 
 			setUser(res1.data.user);
+			console.log(`posts/${id}`);
+			console.log(res2.data.posts);
 			setPosts(res2.data.posts);
 			setFollowed(res1.data.user.is_followed);
-
 			setLoading(false);
 		} catch (error) {
 			setError(error.response.data.message);
@@ -74,7 +78,7 @@ const Profile = () => {
 			setPosts(null);
 			setUser(null);
 		}
-	}
+	};
 
 	async function updatePicConfirm(status = 'profile') {
 		console.log('hi');
@@ -162,7 +166,7 @@ const Profile = () => {
 		return <h1>{error}</h1>;
 	}
 	if (loading) {
-		return <h1>Loading</h1>;
+		return <Loader profile={true} />;
 	}
 
 	function followUser() {

@@ -9,20 +9,37 @@ import Profile from './components/Profile/Profile';
 import { makeRequest } from './axios';
 import { useEffect } from 'react';
 
-import { disconnectSocket, initializeSocket } from './store/socketSlice';
+import {
+	disconnectSocket,
+	initializeSocket,
+	setUsersOnline,
+} from './store/socketSlice';
 
 function App() {
 	const { token, user } = useSelector((state) => state.auth);
+	const { socket } = useSelector((state) => state.socket);
 	makeRequest.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		if (user) dispatch(initializeSocket(user.id));
+		if (user) {
+			console.log('connected');
+			dispatch(initializeSocket(user.id));
+		}
 
 		return () => {
+			console.log('disconnected');
 			if (user) dispatch(disconnectSocket());
 		};
 	}, [dispatch, user]);
+
+	useEffect(() => {
+		if (socket) {
+			socket.on('get-users', (a) => {
+				dispatch(setUsersOnline(a));
+			});
+		}
+	}, [socket, dispatch]);
 
 	return (
 		<Routes>

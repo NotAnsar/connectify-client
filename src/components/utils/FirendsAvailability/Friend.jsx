@@ -23,7 +23,9 @@ const Firend = ({ user, online }) => {
 			<span>
 				<div
 					className={`${
-						online.includes(user.id) ? classes.online : classes.offline
+						online.some((item) => item.userId === user.id)
+							? classes.online
+							: classes.offline
 					}`}
 				></div>
 			</span>

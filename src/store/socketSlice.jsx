@@ -3,6 +3,7 @@ import socketIOClient from 'socket.io-client';
 
 const initialState = {
 	socket: null,
+	online: null,
 };
 
 const socketSlice = createSlice({
@@ -17,6 +18,10 @@ const socketSlice = createSlice({
 
 			socket.emit('new-user-add', action.payload);
 		},
+		setUsersOnline: (state, action) => {
+			console.log(action.payload);
+			state.online = action.payload;
+		},
 
 		disconnectSocket: (state) => {
 			state.socket.disconnect();
@@ -25,6 +30,7 @@ const socketSlice = createSlice({
 	},
 });
 
-export const { initializeSocket, disconnectSocket } = socketSlice.actions;
+export const { initializeSocket, setUsersOnline, disconnectSocket } =
+	socketSlice.actions;
 
 export default socketSlice.reducer;
