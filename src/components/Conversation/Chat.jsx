@@ -36,6 +36,10 @@ const Chat = ({ messages, user, online, setmessages, conversationsId }) => {
 
 		send();
 		async function send() {
+			if (conversationsId === 0) {
+				console.log('createconversation');
+				// conversationsId=newid
+			}
 			try {
 				const data = await makeRequest.post('/messages/send', {
 					content: message,

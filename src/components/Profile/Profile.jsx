@@ -36,13 +36,27 @@ const Profile = () => {
 	const [alert, setalert] = useState(false);
 	const [followed, setFollowed] = useState();
 	const location = useLocation();
-
 	const alertMsg = location.state && location.state.alertMsg;
 
+	const { socket } = useSelector((state) => state.socket);
+
+	// console.log(id);
 	useEffect(() => {
-		if (alertMsg) {
-			setalert(alertMsg);
+		const eventListener = (a) => {
+			if (id == a[0]) {
+				setFollowed(a[1]);
+			}
+			console.log(a);
+		};
+
+		if (socket) {
+			socket.on('user-follow', eventListener);
 		}
+		return () => socket && socket.off('user-follow', eventListener);
+	}, [socket]);
+
+	useEffect(() => {
+		if (alertMsg) setalert(alertMsg);
 	}, [alertMsg]);
 
 	useEffect(() => {

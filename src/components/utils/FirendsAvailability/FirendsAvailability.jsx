@@ -49,7 +49,7 @@ const FirendsAvailability = () => {
 		}
 	}
 	if (!online) return <></>;
-	console.log(online);
+
 	return (
 		<Card>
 			<div className={classes.suggestion}>
