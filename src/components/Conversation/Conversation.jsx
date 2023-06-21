@@ -1,9 +1,10 @@
 import classes from './Conversation.module.scss';
 import Messenger from './Messenger';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { makeRequest } from '../../axios';
 import Chat from './Chat';
 import { useSelector } from 'react-redux';
+import Error from '../utils/Error';
 
 const Conversation = () => {
 	const [conversations, setconversations] = useState([]);
@@ -11,6 +12,7 @@ const Conversation = () => {
 	const [searchFriend, setsearchfriend] = useState({ search: '', friend: [] });
 	const { online } = useSelector((state) => state.socket);
 	const [messages, setmessages] = useState();
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		getConversations();
@@ -35,7 +37,7 @@ const Conversation = () => {
 		if (conversationsId === 0) {
 			createConversation();
 		} else {
-			getMessages(conversationsId);
+			getMessage(conversationsId);
 		}
 		async function createConversation() {
 			try {
@@ -51,12 +53,12 @@ const Conversation = () => {
 					setconversations((prev) => [...prev, newConvesation]);
 				}
 
-				getMessages(data.data.conversation.id);
+				getMessage(data.data.conversation.id);
 			} catch (error) {
 				console.log(error);
 			}
 		}
-		async function getMessages(cId) {
+		async function getMessage(cId) {
 			try {
 				const data = await makeRequest.get('/messages/' + cId);
 				setmessages(data.data.messages);
@@ -86,61 +88,79 @@ const Conversation = () => {
 		}
 	}
 
+	async function deleteConversation(cId) {
+		try {
+			await makeRequest.delete(`/conversations/${cId}`);
+
+			setChatData();
+			setconversations((prev) =>
+				prev.filter((conversation) => conversation.conversation_id !== cId)
+			);
+			setError(`Conversation with id ${cId} was deleted`);
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
 	return (
-		<aside className={classes.conversationContainer}>
-			<div className={classes.users}>
-				<p>Messages</p>
-				<input
-					type='text'
-					placeholder='Search For Friend'
-					value={searchFriend.search}
-					onChange={getFriends}
-				/>
-				<div className={classes.messengers}>
-					{searchFriend.search === '' &&
-						online &&
-						conversations.map((c) => (
-							<Messenger
-								conversation={c}
-								key={c.id}
-								getMessages={getMessages}
-								online={online}
-							/>
-						))}
-					{searchFriend.search !== '' && searchFriend.friend.length === 0 && (
-						<p style={{ fontSize: '14px' }}>No contact was found</p>
-					)}
-					{searchFriend.search !== '' &&
-						searchFriend.friend.length > 0 &&
-						online && (
-							<>
-								<p style={{ fontSize: '15px', paddingLeft: '0.5rem' }}>
-									Friends
-								</p>
-								{searchFriend.friend.map((c) => (
-									<Messenger
-										conversation={c}
-										key={c.id}
-										type='search'
-										search={searchFriend.search}
-										getMessages={getMessages}
-										online={online}
-									/>
-								))}
-							</>
+		<Fragment>
+			{error && <Error msg={error} setAlert={setError} />}
+			<aside className={classes.conversationContainer}>
+				<div className={classes.users}>
+					<p>Messages</p>
+					<input
+						type='text'
+						placeholder='Search For Friend'
+						value={searchFriend.search}
+						onChange={getFriends}
+					/>
+					<div className={classes.messengers}>
+						{searchFriend.search === '' &&
+							online &&
+							conversations.map((c) => (
+								<Messenger
+									conversation={c}
+									key={c.id}
+									getMessages={getMessages}
+									online={online}
+									deleteConversation={deleteConversation}
+								/>
+							))}
+						{searchFriend.search !== '' && searchFriend.friend.length === 0 && (
+							<p style={{ fontSize: '14px' }}>No contact was found</p>
 						)}
+						{searchFriend.search !== '' &&
+							searchFriend.friend.length > 0 &&
+							online && (
+								<>
+									<p style={{ fontSize: '15px', paddingLeft: '0.5rem' }}>
+										Friends
+									</p>
+									{searchFriend.friend.map((c) => (
+										<Messenger
+											conversation={c}
+											key={c.id}
+											type='search'
+											search={searchFriend.search}
+											getMessages={getMessages}
+											online={online}
+										/>
+									))}
+								</>
+							)}
+					</div>
 				</div>
-			</div>
-			{chatData && online && (
-				<Chat
-					user={chatData.user}
-					messages={messages}
-					setmessages={(a) => setmessages((m) => [...m, a])}
-					online={online}
-					conversationsId={chatData.conversationsId}
-				/>
-			)}
-		</aside>
+				{chatData && online && (
+					<Chat
+						user={chatData.user}
+						messages={messages}
+						setmessages={(a) => setmessages((m) => [...m, a])}
+						online={online}
+						conversationsId={chatData.conversationsId}
+					/>
+				)}
+			</aside>
+		</Fragment>
 	);
 };
 

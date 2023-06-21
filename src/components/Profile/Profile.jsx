@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import classes from './Profile.module.scss';
 import Navbar from '../Navbar/Navbar';
 
@@ -36,15 +36,41 @@ const Profile = () => {
 	const [alert, setalert] = useState(false);
 	const [followed, setFollowed] = useState();
 	const location = useLocation();
+	const [showEdit, setshowEdit] = useState({ left: false, right: false });
+	const containerRef = useRef(null);
+
 	const alertMsg = location.state && location.state.alertMsg;
 
 	const { socket } = useSelector((state) => state.socket);
 
-	// console.log(id);
+	const handleMouseEnter = (event) => {
+		const containerRect = containerRef.current.getBoundingClientRect();
+		const hoverPosition = event.clientX - containerRect.left;
+		// console.log(hoverPosition);
+		console.log(event.clientX);
+
+		if (hoverPosition <= 75) {
+			setshowEdit({ left: true, right: false });
+		} else {
+			setshowEdit({ left: false, right: true });
+		}
+	};
+
+	const handleMouseLeave = () => {
+		setshowEdit({ left: false, right: false });
+	};
+
 	useEffect(() => {
 		const eventListener = (a) => {
 			if (id == a[0]) {
 				setFollowed(a[1]);
+
+				console.log(
+					setUser((user) => ({
+						...user,
+						followers: a[1] === 1 ? user.followers++ : user.followers--,
+					}))
+				);
 			}
 			console.log(a);
 		};
@@ -53,7 +79,7 @@ const Profile = () => {
 			socket.on('user-follow', eventListener);
 		}
 		return () => socket && socket.off('user-follow', eventListener);
-	}, [socket]);
+	}, [socket, id]);
 
 	useEffect(() => {
 		if (alertMsg) setalert(alertMsg);
@@ -95,7 +121,6 @@ const Profile = () => {
 	};
 
 	async function updatePicConfirm(status = 'profile') {
-		console.log('hi');
 		let img = null;
 		let pic;
 		if (status === 'profile' && profilePic) pic = profilePic;
@@ -281,22 +306,31 @@ const Profile = () => {
 							)}
 
 							{myId === +id && (
-								<div className={classes.editPhoto}>
-									<label className={`${classes.edit} ${classes.label}`}>
-										<AiOutlineEdit />
-										<input
-											type='file'
-											className={classes.input}
-											onChange={(e) => updatePic(e, 'profile')}
-										/>
-									</label>
+								<div
+									className={classes.editPhoto}
+									onMouseMove={handleMouseEnter}
+									onMouseLeave={handleMouseLeave}
+									ref={containerRef}
+								>
+									{showEdit.left && (
+										<label className={`${classes.edit} ${classes.label}`}>
+											<AiOutlineEdit />
+											<input
+												type='file'
+												className={classes.input}
+												onChange={(e) => updatePic(e, 'profile')}
+											/>
+										</label>
+									)}
 
-									<div
-										className={classes.delete}
-										onClick={() => updatePicConfirm('deleteProfile')}
-									>
-										<AiOutlineDelete />
-									</div>
+									{showEdit.right && (
+										<div
+											className={classes.delete}
+											onClick={() => updatePicConfirm('deleteProfile')}
+										>
+											<AiOutlineDelete />
+										</div>
+									)}
 								</div>
 							)}
 						</div>

@@ -9,31 +9,6 @@ const FirendsAvailability = () => {
 	const [friends, setFriends] = useState([]);
 	const { online } = useSelector((state) => state.socket);
 
-	// const [socket, setsocket] = useState();
-	// const [onlineUsers, setOnlineUsers] = useState();
-	// const { user } = useSelector((state) => state.auth);
-
-	// useEffect(() => {
-	// 	const socket = socketIOClient('http://localhost:3000', {
-	// 		transports: ['websocket'],
-	// 	});
-
-	// 	setsocket(socket);
-	// 	socket.emit('new-user-add', user.id);
-
-	// 	return () => {
-	// 		socket?.disconnect();
-	// 	};
-	// }, [user.id]);
-
-	// useEffect(() => {
-	// 	if (socket) {
-	// 		socket.on('get-users', (a) => {
-	// 			setOnlineUsers(a.map(({ userId }) => userId));
-	// 		});
-	// 	}
-	// }, [socket]);
-
 	useEffect(() => {
 		getFriends();
 	}, []);
@@ -48,6 +23,7 @@ const FirendsAvailability = () => {
 			console.log(error);
 		}
 	}
+
 	if (!online) return <></>;
 
 	return (

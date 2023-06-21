@@ -5,7 +5,6 @@ import { CgClose } from 'react-icons/cg';
 import Like from './Like';
 
 const LikeBox = ({ showLikes, likes, setLikes }) => {
-	console.log(likes);
 	return (
 		<Fragment>
 			<div

@@ -1,6 +1,7 @@
 import React from 'react';
 import ProfilePic from '../utils/ProfilePic';
 import classes from './Conversation.module.scss';
+import { AiOutlineDelete } from 'react-icons/ai';
 
 function highlightString(string, search, className = classes.green) {
 	const lowerString = string.toLowerCase();
@@ -36,6 +37,7 @@ const Messenger = ({
 	type = 'messenger',
 	search,
 	online,
+	deleteConversation,
 }) => {
 	const user = {
 		id: conversation.id,
@@ -53,10 +55,10 @@ const Messenger = ({
 	}
 
 	function showChat() {
-		console.log('showChat');
 		if (type === 'messenger') getMessages(conversation.conversation_id, user);
 		else getMessages(0, user);
 	}
+
 	return (
 		<div className={classes.messenger} onClick={showChat}>
 			<div className={classes.userInfo}>
@@ -70,7 +72,22 @@ const Messenger = ({
 			</div>
 
 			<p className={classes.lastDate}>
-				{online.some((item) => item.userId === user.id) ? 'Online' : 'Offline'}
+				<span className={classes.online}>
+					{online.some((item) => item.userId === user.id)
+						? 'Online'
+						: 'Offline'}
+				</span>
+				{type === 'messenger' && (
+					<span
+						className={classes.svg}
+						onClick={(e) => {
+							e.stopPropagation();
+							deleteConversation(conversation.conversation_id);
+						}}
+					>
+						<AiOutlineDelete />
+					</span>
+				)}
 			</p>
 		</div>
 	);

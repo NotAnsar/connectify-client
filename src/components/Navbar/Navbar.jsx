@@ -3,19 +3,49 @@ import classes from './Navbar.module.scss';
 import { IoNotificationsOutline } from 'react-icons/io5';
 import ThemeToggler from '../Auth/ThemeToggler';
 import Layout from '../utils/Layout';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import ProfilePic from '../utils/ProfilePic';
 import { Link } from 'react-router-dom';
-
-// import profilImg from '../../../images/pic (1).jpg';
+import { makeRequest } from '../../axios';
+import UserSearch from './UserSearch';
 
 const Navbar = () => {
-	const [searchMobile, setSearchMobile] = useState(false);
 	const [search, setSearch] = useState('');
+	const [result, setResult] = useState([]);
+	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+	const [searchMobile, setSearchMobile] = useState(false);
 
-	function submitForm(e) {
+	useEffect(() => {
+		const handleResize = () => setWindowWidth(window.innerWidth);
+
+		window.addEventListener('resize', handleResize);
+
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
+
+	function getUsers(e) {
+		const value = e.target.value;
+		setSearch(value);
+
+		if (value === '') return;
+
+		(async function () {
+			try {
+				const data = await makeRequest.post('/users/search', {
+					searchData: value,
+				});
+
+				console.log(data.data.friends[0]);
+				setResult(data.data.friends);
+			} catch (error) {
+				setResult(null);
+				console.log(error);
+			}
+		})();
+	}
+	function onSubmit(e) {
 		e.preventDefault();
-		console.log(search);
+		getUsers();
 	}
 
 	return (
@@ -31,14 +61,10 @@ const Navbar = () => {
 								type='text'
 								name='search'
 								placeholder='Search...'
-								onChange={(e) => setSearch(e.target.value)}
+								onChange={getUsers}
 								value={search}
 							/>
-							<span
-								className={classes.laptop}
-								type='submit'
-								onClick={submitForm}
-							>
+							<span className={classes.laptop} type='submit' onClick={onSubmit}>
 								<AiOutlineSearch />
 							</span>
 							<span
@@ -72,10 +98,27 @@ const Navbar = () => {
 					name='search'
 					value={search}
 					placeholder='Search...'
-					onChange={(e) => setSearch(e.target.value)}
+					onChange={getUsers}
 				/>
-				<span onClick={submitForm}>Search</span>
+				<span /* onClick={onSubmit} */>Search</span>
 			</div>
+
+			{(windowWidth > 680 || searchMobile) && search !== '' && (
+				<div className={classes.searchWrapper}>
+					<div className={classes.searchResult}>
+						{result.length === 0 ? (
+							<p>No user was found with this name</p>
+						) : (
+							<>
+								{result.map((r) => {
+									console.log(r);
+									return <UserSearch user={r} key={r.id} />;
+								})}
+							</>
+						)}
+					</div>
+				</div>
+			)}
 		</Fragment>
 	);
 };

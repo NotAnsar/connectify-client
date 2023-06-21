@@ -19,6 +19,7 @@ const Like = ({ like }) => {
 			}
 		}
 	}
+
 	return (
 		<div className={classes.like}>
 			<div className={classes.userContainer}>

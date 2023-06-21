@@ -8,6 +8,7 @@
 		cursor: pointer;
 	}
 }
+
 .confirmUpdate {
 	position: fixed;
 	width: 100%;
@@ -96,11 +97,12 @@
 			}
 			.editPhoto {
 				position: absolute;
-				top: 50%;
-				bottom: 50%;
-				transform: translateY(-50%);
+				// top: 50%;
+				// bottom: 50%;
+				// transform: translateY(-50%);
 				right: 0;
-				width: 24px;
+				width: inherit;
+				// width: 24px;
 				height: 100%;
 
 				cursor: pointer;
@@ -108,28 +110,50 @@
 				display: grid;
 				align-items: center;
 				justify-content: center;
-				flex-direction: column;
-				grid-template-rows: 1fr 1fr;
+				// flex-direction: column;
+				// grid-template-rows: 1fr 1fr;
+				grid-template-columns: 1fr 1fr;
 
 				.delete,
 				.edit {
 					height: 100%;
-					width: inherit;
+					// width: inherit;
+
+					width: 100%;
 					display: flex;
 					align-items: center;
 					justify-content: center;
+					background-color: var(--text-color);
+					color: var(--bg-color);
+					opacity: 0.85;
 				}
+
 				.delete {
-					background-color: var(--error);
+					// background-color: var(--error);
+
+					position: absolute;
+					width: 75px;
+					left: 75px;
 				}
 				.edit {
-					background-color: var(--info);
+					position: absolute;
+					width: 75px;
+					left: 0;
+					// background-color: var(--info);
 				}
+
 				svg {
 					width: 18px;
 					height: 18px;
 				}
 			}
+
+			// .editPhoto:hover {
+			// 	.delete,
+			// 	.edit {
+			// 		display: flex;
+			// 	}
+			// }
 		}
 		@media only screen and (max-width: 750px) {
 			flex-direction: column;
@@ -281,10 +305,10 @@
 			@media only screen and (max-width: 750px) {
 				gap: 2rem;
 				grid-template-columns: 1fr;
-				// // transform: translateY(-40px);
+				// transform: translateY(-40px);
 
 				@media only screen and (max-width: 680px) {
-					// // transform: translateY(-80px);
+					// transform: translateY(-80px);
 				}
 			}
 
