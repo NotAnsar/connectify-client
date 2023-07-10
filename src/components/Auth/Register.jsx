@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import classes from './Login.module.scss';
 import { VscEye, VscEyeClosed } from 'react-icons/vsc';
-import { useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import ThemeToggler from './ThemeToggler';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import validator from 'validator';
@@ -9,11 +9,14 @@ import { makeRequest } from '../../axios';
 import { register } from '../../store/auth';
 import { useDispatch } from 'react-redux';
 import Error from '../utils/Error';
+import OTPModal from '../utils/OTP/OTPModal';
 
 const Register = () => {
 	const [visibble, setvisibble] = useState(false);
 	const dispatch = useDispatch();
 	const [error, setError] = useState(null);
+	const [otp, showOTP] = useState(false);
+	const [otpCode, setOtpCode] = useState(null);
 	const [formData, setFormData] = useState({
 		prenom: '',
 		nom: '',
@@ -35,20 +38,43 @@ const Register = () => {
 		relationship: true,
 	});
 
-	const formHandler = async (e) => {
+	useEffect(() => {
+		document.body.style.overflow = otp && otpCode ? 'hidden' : 'unset';
+	}, [otp, otpCode]);
+	const formHandler = (e) => {
 		e.preventDefault();
 
 		if (Object.values(formValid).every(Boolean)) {
-			try {
-				const data = await makeRequest.post('/auth/register', formData);
-
-				dispatch(register(data.data));
-			} catch (error) {
-				console.log(error);
-				setError(error.response.data.message);
-			}
+			sendOTP(formData.email);
+			// register(formData);
 		}
 	};
+
+	function OTPDone() {
+		if (Object.values(formValid).every(Boolean)) registerUser(formData);
+	}
+	async function sendOTP(email) {
+		try {
+			const data = await makeRequest.post('/auth/sendOTP', { email });
+
+			setOtpCode(data.data.otp);
+
+			showOTP(true);
+		} catch (error) {
+			console.log(error);
+			setError(error.response.data.message);
+		}
+	}
+	async function registerUser(dataa) {
+		try {
+			const data = await makeRequest.post('/auth/register', dataa);
+
+			dispatch(register(data.data));
+		} catch (error) {
+			console.log(error);
+			setError(error.response.data.message);
+		}
+	}
 
 	const handleChange = (e) => {
 		let value = e.target.value;
@@ -91,195 +117,212 @@ const Register = () => {
 	};
 
 	return (
-		<div className={`${classes.login} ${classes.signup}`}>
-			{error && <Error msg={error} setAlert={setError} />}
-			<ThemeToggler />
-			<h1>Connectify</h1>
-			<h2>Hello Again!</h2>
-			<p>Sign in to your account</p>
-			<form onSubmit={formHandler}>
-				<div className={classes.splitBy2}>
-					<div
-						className={`${classes.inputContainer} ${
-							formValid.prenom ? '' : classes.error
-						}`}
-					>
-						<input type='text' required name='prenom' onChange={handleChange} />
-						<label>First Name</label>
-						<div className={classes.info}>
-							<AiOutlineInfoCircle />
-						</div>
-						<span className={classes.msg}>
-							First Name cannot be shorter than 3 characters. Please use letters
-							only.
-						</span>
-					</div>
-					<div
-						className={`${classes.inputContainer} ${
-							formValid.nom ? '' : classes.error
-						}`}
-					>
-						<input type='text' required name='nom' onChange={handleChange} />
-						<label>Last Name</label>
-						<div className={classes.info}>
-							<AiOutlineInfoCircle />
-						</div>
-						<span className={classes.msg}>
-							Last Name cannot be shorter than 3 characters. Please use letters
-							only.
-						</span>
-					</div>
-				</div>
-				<div className={classes.splitBy2}>
-					<div
-						className={`${classes.inputContainer} ${
-							formValid.username ? '' : classes.error
-						}`}
-					>
-						<input
-							type='text'
-							required
-							name='username'
-							onChange={handleChange}
-						/>
-						<label>Userame</label>
-						<div className={classes.info}>
-							<AiOutlineInfoCircle />
-						</div>
-						<span className={classes.msg}>
-							Username cannot be shorter than 3 characters
-						</span>
-					</div>
+		<Fragment>
+			{otp && otpCode && (
+				<OTPModal
+					registerUser={OTPDone}
+					setError={setError}
+					showOTP={showOTP}
+					otpCode={otpCode}
+				/>
+			)}
 
-					<div
-						className={`${classes.inputRadioContainer} ${
-							formValid.relationship ? '' : classes.error
-						}`}
-						style={{
-							border: !formValid.relationship && 'solid 1px var(--error)',
-						}}
-					>
-						<ul>
-							<li>
-								<input
-									type='radio'
-									name='relationship'
-									value='Single'
-									required
-									onChange={handleChange}
-								/>
-								<span>Single</span>
-							</li>
-							<li>
-								<input
-									type='radio'
-									name='relationship'
-									onChange={handleChange}
-									value='In a Relationship'
-									required
-								/>
-								<span>In a Relationship</span>
-							</li>
-						</ul>
+			<div className={`${classes.login} ${classes.signup}`}>
+				{error && <Error msg={error} setAlert={setError} />}
+				<ThemeToggler />
+				<h1 onClick={() => showOTP(true)}>Connectify</h1>
+				<h2>Hello Again!</h2>
+				<p>Sign in to your account</p>
+				<form onSubmit={formHandler}>
+					<div className={classes.splitBy2}>
+						<div
+							className={`${classes.inputContainer} ${
+								formValid.prenom ? '' : classes.error
+							}`}
+						>
+							<input
+								type='text'
+								required
+								name='prenom'
+								onChange={handleChange}
+							/>
+							<label>First Name</label>
+							<div className={classes.info}>
+								<AiOutlineInfoCircle />
+							</div>
+							<span className={classes.msg}>
+								First Name cannot be shorter than 3 characters. Please use
+								letters only.
+							</span>
+						</div>
+						<div
+							className={`${classes.inputContainer} ${
+								formValid.nom ? '' : classes.error
+							}`}
+						>
+							<input type='text' required name='nom' onChange={handleChange} />
+							<label>Last Name</label>
+							<div className={classes.info}>
+								<AiOutlineInfoCircle />
+							</div>
+							<span className={classes.msg}>
+								Last Name cannot be shorter than 3 characters. Please use
+								letters only.
+							</span>
+						</div>
+					</div>
+					<div className={classes.splitBy2}>
+						<div
+							className={`${classes.inputContainer} ${
+								formValid.username ? '' : classes.error
+							}`}
+						>
+							<input
+								type='text'
+								required
+								name='username'
+								onChange={handleChange}
+							/>
+							<label>Userame</label>
+							<div className={classes.info}>
+								<AiOutlineInfoCircle />
+							</div>
+							<span className={classes.msg}>
+								Username cannot be shorter than 3 characters
+							</span>
+						</div>
 
-						<label
+						<div
+							className={`${classes.inputRadioContainer} ${
+								formValid.relationship ? '' : classes.error
+							}`}
 							style={{
-								color: !formValid.relationship && 'var(--error)',
+								border: !formValid.relationship && 'solid 1px var(--error)',
 							}}
 						>
-							Relationship Status
-						</label>
-						<div className={classes.info}>
-							<AiOutlineInfoCircle />
+							<ul>
+								<li>
+									<input
+										type='radio'
+										name='relationship'
+										value='Single'
+										required
+										onChange={handleChange}
+									/>
+									<span>Single</span>
+								</li>
+								<li>
+									<input
+										type='radio'
+										name='relationship'
+										onChange={handleChange}
+										value='In a Relationship'
+										required
+									/>
+									<span>In a Relationship</span>
+								</li>
+							</ul>
+
+							<label
+								style={{
+									color: !formValid.relationship && 'var(--error)',
+								}}
+							>
+								Relationship Status
+							</label>
+							<div className={classes.info}>
+								<AiOutlineInfoCircle />
+							</div>
 						</div>
 					</div>
-				</div>
 
-				<div className={classes.splitBy2}>
+					<div className={classes.splitBy2}>
+						<div
+							className={`${classes.inputContainer} ${
+								formValid.city ? '' : classes.error
+							}`}
+						>
+							<input type='text' required name='city' onChange={handleChange} />
+							<label>City</label>
+							<div className={classes.info}>
+								<AiOutlineInfoCircle />
+							</div>
+							<span className={classes.msg}>
+								City cannot be shorter than 3 characters. Please use letters
+								only.
+							</span>
+						</div>
+						<div
+							className={`${classes.inputContainer} ${
+								formValid.country ? '' : classes.error
+							}`}
+						>
+							<input
+								type='text'
+								required
+								name='country'
+								onChange={handleChange}
+							/>
+							<label>Country</label>
+							<div className={classes.info}>
+								<AiOutlineInfoCircle />
+							</div>
+							<span className={classes.msg}>
+								Country cannot be shorter than 3 characters. Please use letters
+								only.
+							</span>
+						</div>
+					</div>
+
 					<div
 						className={`${classes.inputContainer} ${
-							formValid.city ? '' : classes.error
+							formValid.email ? '' : classes.error
 						}`}
 					>
-						<input type='text' required name='city' onChange={handleChange} />
-						<label>City</label>
+						<input type='text' required name='email' onChange={handleChange} />
+						<label>Email Address</label>
 						<div className={classes.info}>
 							<AiOutlineInfoCircle />
 						</div>
-						<span className={classes.msg}>
-							City cannot be shorter than 3 characters. Please use letters only.
-						</span>
+						<span className={classes.msg}>Enter Valid Email</span>
 					</div>
 					<div
 						className={`${classes.inputContainer} ${
-							formValid.country ? '' : classes.error
+							formValid.password ? '' : classes.error
 						}`}
 					>
 						<input
-							type='text'
+							type={visibble ? 'text' : 'password'}
 							required
-							name='country'
+							name='password'
 							onChange={handleChange}
 						/>
-						<label>Country</label>
+						<label>Password</label>
+						<span
+							onClick={() => setvisibble((a) => !a)}
+							className={classes.passwordIcon}
+						>
+							{visibble ? <VscEye /> : <VscEyeClosed />}
+						</span>
 						<div className={classes.info}>
 							<AiOutlineInfoCircle />
 						</div>
 						<span className={classes.msg}>
-							Country cannot be shorter than 3 characters. Please use letters
-							only.
+							password must be at least 8 characters long with 1 lowercase 1
+							number and 1 symbol
 						</span>
 					</div>
-				</div>
 
-				<div
-					className={`${classes.inputContainer} ${
-						formValid.email ? '' : classes.error
-					}`}
-				>
-					<input type='text' required name='email' onChange={handleChange} />
-					<label>Email Address</label>
-					<div className={classes.info}>
-						<AiOutlineInfoCircle />
-					</div>
-					<span className={classes.msg}>Enter Valid Email</span>
-				</div>
-				<div
-					className={`${classes.inputContainer} ${
-						formValid.password ? '' : classes.error
-					}`}
-				>
-					<input
-						type={visibble ? 'text' : 'password'}
-						required
-						name='password'
-						onChange={handleChange}
-					/>
-					<label>Password</label>
-					<span
-						onClick={() => setvisibble((a) => !a)}
-						className={classes.passwordIcon}
-					>
-						{visibble ? <VscEye /> : <VscEyeClosed />}
-					</span>
-					<div className={classes.info}>
-						<AiOutlineInfoCircle />
-					</div>
-					<span className={classes.msg}>
-						password must be at least 8 characters long with 1 lowercase 1
-						number and 1 symbol
-					</span>
-				</div>
-
-				<input type='submit' value='Sign up' />
-			</form>
-			<p className={classes.switchLog}>
-				Already have an account? Let’s
-				<Link to='/'>
-					<span>Login</span>
-				</Link>
-			</p>
-		</div>
+					<input type='submit' value='Sign up' />
+				</form>
+				<p className={classes.switchLog}>
+					Already have an account? Let’s
+					<Link to='/'>
+						<span>Login</span>
+					</Link>
+				</p>
+			</div>
+		</Fragment>
 	);
 };
 

@@ -289,3 +289,24 @@ input {
 	transform: translate(0, -50%);
 	right: 2.75rem;
 }
+
+.note {
+	font-size: 14px;
+	margin-top: 1rem;
+	color: var(--primary-color);
+}
+
+.invalid {
+	display: block;
+	font-size: 14px;
+	margin-top: 1rem;
+	color: var(--error);
+}
+.resetContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	svg {
+		margin-right: 0.5rem;
+	}
+}

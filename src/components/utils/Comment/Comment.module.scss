@@ -14,7 +14,8 @@
 }
 .updateBox,
 .commentBox,
-.likeBox {
+.likeBox,
+.otpBox {
 	z-index: 100;
 	background-color: var(--bg2-color);
 	width: 750px;
@@ -61,7 +62,8 @@
 			}
 		}
 	}
-	.comments {
+	.comments,
+	.modal {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -380,5 +382,45 @@
 				}
 			}
 		}
+	}
+}
+
+.otpBox {
+	// background-color: var(--bg-color);
+	width: 45%;
+	height: fit-content;
+	gap: 1rem;
+
+	.addComment {
+		background-color: transparent;
+		margin-left: 1rem;
+		margin-right: 1rem;
+		margin-bottom: 1rem;
+		margin-top: 0;
+		padding-top: 0;
+		input[type='submit'] {
+			margin-top: 1rem;
+			padding: 0.75rem;
+
+			display: block;
+
+			background-color: var(--primary-color);
+			color: var(--white);
+			font-size: 1rem;
+			cursor: pointer;
+			transition: 300ms;
+			&:hover,
+			&:focus {
+				opacity: 0.8;
+			}
+		}
+	}
+	.modal {
+		input {
+			background-color: var(--secondary-color);
+		}
+	}
+
+	@media only screen and (max-width: 800px) {
 	}
 }
