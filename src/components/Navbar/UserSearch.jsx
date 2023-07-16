@@ -17,7 +17,6 @@ const UserSearch = ({ user }) => {
 						<span>@{user.username}</span>
 					</div>
 				</div>
-				{/* <p className={classes.lastDate}>.</p> */}
 			</div>
 		</Link>
 	);

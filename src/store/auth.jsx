@@ -19,10 +19,14 @@ export const authSlice = createSlice({
 		},
 		setMyUser: (state, action) => {
 			const { user } = action.payload;
-
 			state.user = user;
-
 			localStorage.setItem('user', JSON.stringify(user));
+		},
+		setProfilePic: (state, action) => {
+			const { photo } = action.payload;
+			const updatedUser = { ...state.user, photo };
+
+			localStorage.setItem('user', JSON.stringify(updatedUser));
 		},
 		removeToken: (state) => {
 			state.token = null;
@@ -58,6 +62,7 @@ export const authSlice = createSlice({
 export const {
 	setToken,
 	setMyUser,
+	setProfilePic,
 	removeToken,
 	removeUser,
 	login,

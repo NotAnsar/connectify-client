@@ -14,6 +14,7 @@ import {
 	initializeSocket,
 	setUsersOnline,
 } from './store/socketSlice';
+import { setMyUser } from './store/auth';
 
 function App() {
 	const { token, user } = useSelector((state) => state.auth);
@@ -40,6 +41,20 @@ function App() {
 			});
 		}
 	}, [socket, dispatch]);
+
+	useEffect(() => {
+		if (user) {
+			(async function refreshUserData() {
+				try {
+					const res = await makeRequest.get('users/me');
+					console.log(res.data.user);
+					dispatch(setMyUser(res.data));
+				} catch (error) {
+					console.log(error);
+				}
+			})();
+		}
+	}, [dispatch]);
 
 	return (
 		<Routes>

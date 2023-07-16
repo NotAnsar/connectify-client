@@ -12,6 +12,7 @@ const Chat = ({ messages, user, online, setmessages, conversationsId }) => {
 	const [message, setMessage] = useState('');
 	const { socket } = useSelector((state) => state.socket);
 
+	console.log(user);
 	useEffect(() => {
 		const eventListener = (a) => {
 			if (a.conversation_id === conversationsId && a.sender_id === user.id) {

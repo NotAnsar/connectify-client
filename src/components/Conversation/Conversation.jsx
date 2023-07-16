@@ -13,32 +13,41 @@ const Conversation = () => {
 	const { online } = useSelector((state) => state.socket);
 	const [messages, setmessages] = useState();
 	const [error, setError] = useState(null);
+	const { socket } = useSelector((state) => state.socket);
+
+	useEffect(() => {
+		const eventListener = (cId) => {
+			setChatData();
+			getConversations();
+			setError(`Conversation with id ${cId} was deleted`);
+		};
+		if (socket) socket.on('conversation-deleted', eventListener);
+	}, [socket]);
 
 	useEffect(() => {
 		getConversations();
-		async function getConversations() {
-			try {
-				const data = await makeRequest.get('/conversations');
-
-				setconversations(data.data.conversations);
-			} catch (error) {
-				console.log(error);
-			}
-		}
 
 		return () => {
 			setconversations([]);
 		};
 	}, []);
 
+	async function getConversations() {
+		try {
+			const data = await makeRequest.get('/conversations');
+
+			setconversations(data.data.conversations);
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
 	function getMessages(conversationsId, user) {
 		setsearchfriend({ search: '', friend: false });
 
-		if (conversationsId === 0) {
-			createConversation();
-		} else {
-			getMessage(conversationsId);
-		}
+		if (conversationsId === 0) createConversation();
+		else getMessage(conversationsId);
+
 		async function createConversation() {
 			try {
 				const data = await makeRequest.post('/conversations', {

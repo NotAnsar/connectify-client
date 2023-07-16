@@ -46,6 +46,7 @@ const Messenger = ({
 		prenom: conversation.prenom,
 		username: conversation.username,
 	};
+
 	let fullname = `${user.nom} ${user.prenom}`;
 	let username = user.username;
 

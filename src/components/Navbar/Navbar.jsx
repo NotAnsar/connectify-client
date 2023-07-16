@@ -1,26 +1,26 @@
 import { AiOutlineSearch, AiOutlineClose } from 'react-icons/ai';
 import classes from './Navbar.module.scss';
-import { IoNotificationsOutline } from 'react-icons/io5';
+import { IoNotificationsOutline, IoNotifications } from 'react-icons/io5';
 import ThemeToggler from '../Auth/ThemeToggler';
 import Layout from '../utils/Layout';
 import { Fragment, useEffect, useState } from 'react';
 import ProfilePic from '../utils/ProfilePic';
 import { Link } from 'react-router-dom';
 import { makeRequest } from '../../axios';
-import UserSearch from './UserSearch';
+
+import SearchModal from './SearchModal';
+import NotificationModal from './NotificationModal';
 
 const Navbar = () => {
 	const [search, setSearch] = useState('');
 	const [result, setResult] = useState([]);
-	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+	const [notifIsVisible, setNotifIsVisible] = useState(false);
 	const [searchMobile, setSearchMobile] = useState(false);
+	const [notifCount, setNotifCount] = useState(0);
+	const [notifications, setNotifications] = useState([]);
 
 	useEffect(() => {
-		const handleResize = () => setWindowWidth(window.innerWidth);
-
-		window.addEventListener('resize', handleResize);
-
-		return () => window.removeEventListener('resize', handleResize);
+		getNotifCount();
 	}, []);
 
 	function getUsers(e) {
@@ -43,6 +43,44 @@ const Navbar = () => {
 			}
 		})();
 	}
+
+	function getNotifCount() {
+		(async function () {
+			try {
+				const data = await makeRequest.get('/notifications/count');
+
+				setNotifCount(data.data.count);
+			} catch (error) {
+				setResult(null);
+				console.log(error);
+			}
+		})();
+	}
+
+	function showNotifications() {
+		(async function () {
+			try {
+				const data = await makeRequest.get('/notifications');
+				console.log(data.data.notification);
+				setNotifications(data.data.notification);
+				setNotifIsVisible((a) => !a);
+				setAllSeen();
+				setNotifCount(0);
+			} catch (error) {
+				setNotifications(null);
+				console.log(error);
+			}
+		})();
+
+		async function setAllSeen() {
+			try {
+				await makeRequest.patch('/notifications');
+			} catch (error) {
+				console.log(error);
+			}
+		}
+	}
+
 	function onSubmit(e) {
 		e.preventDefault();
 		getUsers();
@@ -80,8 +118,18 @@ const Navbar = () => {
 							<ThemeToggler />
 						</div>
 
-						<span className={classes.notification}>
-							<IoNotificationsOutline />
+						<span className={classes.notification} onClick={showNotifications}>
+							{notifCount !== 0 && (
+								<div className={classes.count}>
+									<p>{notifCount > 9 ? '+9' : notifCount}</p>
+								</div>
+							)}
+
+							{notifIsVisible ? (
+								<IoNotifications style={{ fill: 'var(--primary-color)' }} />
+							) : (
+								<IoNotificationsOutline />
+							)}
 						</span>
 
 						<ProfilePic />
@@ -103,21 +151,14 @@ const Navbar = () => {
 				<span /* onClick={onSubmit} */>Search</span>
 			</div>
 
-			{(windowWidth > 680 || searchMobile) && search !== '' && (
-				<div className={classes.searchWrapper}>
-					<div className={classes.searchResult}>
-						{result.length === 0 ? (
-							<p>No user was found with this name</p>
-						) : (
-							<>
-								{result.map((r) => {
-									console.log(r);
-									return <UserSearch user={r} key={r.id} />;
-								})}
-							</>
-						)}
-					</div>
-				</div>
+			<SearchModal
+				searchMobile={searchMobile}
+				search={search}
+				result={result}
+			/>
+
+			{notifIsVisible && notifications && (
+				<NotificationModal notifications={notifications} />
 			)}
 		</Fragment>
 	);

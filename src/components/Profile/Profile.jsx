@@ -46,8 +46,6 @@ const Profile = () => {
 	const handleMouseEnter = (event) => {
 		const containerRect = containerRef.current.getBoundingClientRect();
 		const hoverPosition = event.clientX - containerRect.left;
-		// console.log(hoverPosition);
-		console.log(event.clientX);
 
 		if (hoverPosition <= 75) {
 			setshowEdit({ left: true, right: false });
@@ -123,8 +121,9 @@ const Profile = () => {
 	async function updatePicConfirm(status = 'profile') {
 		let img = null;
 		let pic;
-		if (status === 'profile' && profilePic) pic = profilePic;
-		else if (status === 'cover' && coverpic) pic = coverpic;
+		if (status === 'profile' && profilePic) {
+			pic = profilePic;
+		} else if (status === 'cover' && coverpic) pic = coverpic;
 		else if (status === 'deleteProfile' || status === 'deleteCover') pic = null;
 		else {
 			console.log('problem');
@@ -165,7 +164,6 @@ const Profile = () => {
 			try {
 				const res = await makeRequest.patch('users', obj);
 
-				console.log(res.data.user);
 				dispatch(setMyUser(res.data));
 
 				if (status === 'profile') setalert('Profile Pic Changed');
