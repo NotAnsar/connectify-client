@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const url = 'http://localhost:3000/api/v1';
+const url = import.meta.env.VITE_BACKEND_APP_URL;
 
 export const makeRequest = axios.create({
 	withCredentials: true,
