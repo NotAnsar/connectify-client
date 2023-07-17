@@ -11,7 +11,7 @@ const socketSlice = createSlice({
 	initialState,
 	reducers: {
 		initializeSocket: (state, action) => {
-			const socket = socketIOClient('http://localhost:3000', {
+			const socket = socketIOClient(import.meta.env.VITE_BACKEND_APP_URL, {
 				transports: ['websocket'],
 			});
 			state.socket = socket;
