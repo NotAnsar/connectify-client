@@ -20,14 +20,11 @@ const Login = () => {
 	const [alert, setalert] = useState(false);
 
 	const location = useLocation();
-	console.log(location);
+
 	const alertMsg = location.state && location.state.alertMsg;
-	console.log(alertMsg);
+
 	useEffect(() => {
-		console.log(alertMsg);
-		if (alertMsg) {
-			setalert(alertMsg);
-		}
+		if (alertMsg) setalert(alertMsg);
 	}, [alertMsg]);
 
 	const formHandler = async (e) => {

@@ -15,7 +15,7 @@ import {
 
 import Post from '../Home/Post';
 
-import { makeRequest } from '../../axios';
+import { imageUrl, makeRequest } from '../../axios';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../utils/Alert';
@@ -60,22 +60,11 @@ const Profile = () => {
 
 	useEffect(() => {
 		const eventListener = (a) => {
-			if (id == a[0]) {
-				setFollowed(a[1]);
-
-				console.log(
-					setUser((user) => ({
-						...user,
-						followers: a[1] === 1 ? user.followers++ : user.followers--,
-					}))
-				);
-			}
-			console.log(a);
+			if (id == a[0]) setFollowed(a[1]);
 		};
 
-		if (socket) {
-			socket.on('user-follow', eventListener);
-		}
+		if (socket) socket.on('user-follow', eventListener);
+
 		return () => socket && socket.off('user-follow', eventListener);
 	}, [socket, id]);
 
@@ -124,11 +113,13 @@ const Profile = () => {
 		if (status === 'profile' && profilePic) {
 			pic = profilePic;
 		} else if (status === 'cover' && coverpic) pic = coverpic;
-		else if (status === 'deleteProfile' || status === 'deleteCover') pic = null;
-		else {
-			console.log('problem');
+		else if (status === 'deleteProfile' || status === 'deleteCover') {
+			pic = null;
+		} else {
+			console.log('Something went Wrongs');
 			return;
 		}
+		console.log(pic);
 		if (pic) {
 			const data = new FormData();
 			const fileName = Date.now() + pic.name;
@@ -136,9 +127,11 @@ const Profile = () => {
 			data.append('file', pic);
 
 			try {
+				console.log('request');
 				const res = await makeRequest.post('/upload', data);
 				console.log(res.data);
 				img = res.data.filename;
+				console.log('uploaded', img);
 				setProfilePic();
 				setcoverpic();
 			} catch (err) {
@@ -260,7 +253,10 @@ const Profile = () => {
 					/>
 				)}
 				{user?.coverPhoto && !coverpic && (
-					<img src={'/upload/' + encodeURIComponent(user?.coverPhoto)} alt='' />
+					<img
+						src={`${imageUrl}${encodeURIComponent(user?.coverPhoto)}`}
+						alt=''
+					/>
 				)}
 
 				{myId === +id && (
@@ -286,10 +282,7 @@ const Profile = () => {
 					<div className={classes.userProfile}>
 						<div className={classes.profileImg}>
 							{user?.photo && !profilePic && (
-								<img
-									src={'/upload/' + encodeURIComponent(user?.photo)}
-									alt=''
-								/>
+								<img src={imageUrl + encodeURIComponent(user?.photo)} alt='' />
 							)}
 							{!user?.photo && !profilePic && (
 								<h5>{user?.prenom.charAt(0).toUpperCase()}</h5>

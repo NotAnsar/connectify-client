@@ -7,7 +7,7 @@ import {
 	AiOutlinePaperClip,
 	AiOutlineVideoCameraAdd,
 } from 'react-icons/ai';
-import { makeRequest } from '../../../axios';
+import { imageUrl, makeRequest } from '../../../axios';
 
 const UpdatePost = ({ showUpdated, name, post, postUpdated }) => {
 	const [file, setFile] = useState();
@@ -74,7 +74,7 @@ const UpdatePost = ({ showUpdated, name, post, postUpdated }) => {
 					<div className={classes.uploadedImage}>
 						{!file && postImg && (
 							<>
-								<img src={'/upload/' + postImg} alt='' />
+								<img src={imageUrl + postImg} alt='' />
 								<AiOutlineDelete onClick={() => setPostImg(null)} />
 							</>
 						)}

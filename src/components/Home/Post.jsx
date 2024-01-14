@@ -9,7 +9,7 @@ import { FiMessageCircle, FiHeart, FiBookmark } from 'react-icons/fi';
 import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
-import { makeRequest } from '../../axios';
+import { imageUrl, makeRequest } from '../../axios';
 import LikeBox from '../utils/Like/LikeBox';
 
 import { Link } from 'react-router-dom';
@@ -203,7 +203,7 @@ const Post = ({ post, me, postDeleted, postUpdated }) => {
 
 					{post.img && (
 						<div className={classes.contentImg}>
-							<img src={'/upload/' + encodeURIComponent(post.img)} alt='' />
+							<img src={`${imageUrl}${encodeURIComponent(post.img)}`} alt='' />
 						</div>
 					)}
 

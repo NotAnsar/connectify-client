@@ -17,6 +17,7 @@ const FirendsAvailability = () => {
 		try {
 			const res = await makeRequest.get('users/friends');
 
+			console.log(res.data.users);
 			setFriends(res.data.users);
 		} catch (error) {
 			setFriends(null);

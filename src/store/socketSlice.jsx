@@ -12,14 +12,13 @@ const socketSlice = createSlice({
 	reducers: {
 		initializeSocket: (state, action) => {
 			const socket = socketIOClient(import.meta.env.VITE_BACKEND_APP_URL, {
-				transports: ['websocket'],
+				transports: ['websocket', 'polling'],
 			});
 			state.socket = socket;
 
 			socket.emit('new-user-add', action.payload);
 		},
 		setUsersOnline: (state, action) => {
-			console.log(action.payload);
 			state.online = action.payload;
 		},
 

@@ -41,6 +41,7 @@ const Register = () => {
 	useEffect(() => {
 		document.body.style.overflow = otp && otpCode ? 'hidden' : 'unset';
 	}, [otp, otpCode]);
+
 	const formHandler = (e) => {
 		e.preventDefault();
 

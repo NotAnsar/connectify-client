@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import classes from './Layout.module.scss';
 import { Link } from 'react-router-dom';
+import { imageUrl } from '../../axios';
 
 const ProfilePic = ({ width = '40px', user, withlink = true }) => {
 	const me = useSelector((state) => state.auth.user);
@@ -29,7 +30,7 @@ const ProfilePic = ({ width = '40px', user, withlink = true }) => {
 						}}
 					>
 						{user?.photo ? (
-							<img src={'/upload/' + encodeURIComponent(user?.photo)} alt='' />
+							<img src={imageUrl + encodeURIComponent(user?.photo)} alt='' />
 						) : (
 							<span className={classes.profile}>
 								{user?.prenom.charAt(0).toUpperCase()}
@@ -37,7 +38,7 @@ const ProfilePic = ({ width = '40px', user, withlink = true }) => {
 						)}
 					</Link>
 				) : user?.photo ? (
-					<img src={'/upload/' + encodeURIComponent(user?.photo)} alt='' />
+					<img src={imageUrl + encodeURIComponent(user?.photo)} alt='' />
 				) : (
 					<span className={classes.profile}>
 						{user?.prenom.charAt(0).toUpperCase()}
