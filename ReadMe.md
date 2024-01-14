@@ -27,3 +27,9 @@ Connectify is a social media platform designed to connect people, share experien
 - **Deployment:**
   - Frontend: Vercel
   - Backend: Railway.app
+
+## Dome Video
+
+https://github.com/NotAnsar/connectify-client/assets/72499382/08bb0532-b3ec-47ca-8880-1f67100530c1
+
+
